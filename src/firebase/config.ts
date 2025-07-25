@@ -1,23 +1,21 @@
-import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your Firebase configuration
-// Replace these with your actual Firebase config values
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "your-api-key",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "your-app-id"
+  apiKey: "AIzaSyC-i_Zdg5XSwQigPwtRXVBTdyAqgYiba9E",
+  authDomain: "water-rats-tracker.firebaseapp.com",
+  projectId: "water-rats-tracker",
+  storageBucket: "water-rats-tracker.firebasestorage.app",
+  messagingSenderId: "1051404356421",
+  appId: "1:1051404356421:web:73a49036ee6e2b6ec84c2c",
+  measurementId: "G-V0XK3TEP4V"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-
-// Initialize Firebase services
 export const db = getFirestore(app);
-export const auth = getAuth(app);
-
-export default app;

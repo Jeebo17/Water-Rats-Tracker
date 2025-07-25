@@ -1,20 +1,17 @@
-import { Instructor, Destination, Session, FinancialRecord } from '../types';
+import { Leader, Destination, Session, FinancialRecord } from '../types';
 
-export const instructors: Instructor[] = [
+export const leaders: Leader[] = [
   {
-    id: '1',
     name: 'Mark Thompson',
     email: 'mark.thompson@email.com',
     phone: '07111 222333'
   },
   {
-    id: '2',
     name: 'Sophie Chen',
     email: 'sophie.chen@email.com',
     phone: '07222 333444'
   },
   {
-    id: '3',
     name: 'James Parker',
     email: 'james.parker@email.com',
     phone: '07333 444555'
@@ -71,11 +68,11 @@ export const sessions: Session[] = [
     activity: 'SUP Introduction',
     groupType: 'Cubs',
     destinationId: '1',
-    instructorIds: ['2'],
+    leaderNames: ['2'],
     maxParticipants: 12,
     expectedAttendees: 8,
     cost: 150,
-    status: 'confirmed',
+    status: 'Confirmed',
     weatherConditions: 'Sunny, light winds',
     notes: 'Focus on basic paddling technique and safety',
     equipment: ['SUP boards', 'Paddles', 'Life jackets']
@@ -87,11 +84,11 @@ export const sessions: Session[] = [
     activity: 'Kayaking Skills',
     groupType: 'Scouts',
     destinationId: '2',
-    instructorIds: ['3'],
+    leaderNames: ['3'],
     maxParticipants: 10,
     expectedAttendees: 6,
     cost: 200,
-    status: 'planned',
+    status: 'Planning',
     equipment: ['Kayaks', 'Paddles', 'Helmets', 'Buoyancy aids']
   },
   {
@@ -101,11 +98,11 @@ export const sessions: Session[] = [
     activity: 'Sailing Basics',
     groupType: 'Explorers',
     destinationId: '3',
-    instructorIds: ['1', '2'],
+    leaderNames: ['1', '2'],
     maxParticipants: 15,
     expectedAttendees: 12,
     cost: 120,
-    status: 'confirmed',
+    status: 'Confirmed',
     equipment: ['Dinghies', 'Sails', 'Life jackets']
   },
   {
@@ -115,12 +112,12 @@ export const sessions: Session[] = [
     activity: 'Water Safety Course',
     groupType: 'External',
     destinationId: '1',
-    instructorIds: [],
+    leaderNames: [],
     maxParticipants: 8,
     expectedAttendees: 8,
     cost: 150,
-    status: 'planned',
-    notes: 'Need 2 instructors for this session',
+    status: 'Planning',
+    notes: 'Need 2 leaders for this session',
     equipment: ['Life jackets', 'Rescue equipment']
   }
 ];

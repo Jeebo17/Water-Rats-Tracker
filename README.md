@@ -1,11 +1,11 @@
 # Water Rats Session Management System
 
-A simplified session management system for the Water Rats watersports group, designed to help instructors sign up for sessions and track group activities.
+A simplified session management system for the Water Rats watersports group, designed to help leaders sign up for sessions and track group activities.
 
 ## Features
 
 - **Session Management**: Create and manage watersports sessions for different scout groups
-- **Instructor Signup**: Simple interface for instructors to sign up for sessions
+- **Leader Signup**: Simple interface for leaders to sign up for sessions
 - **Group Types**: Support for Squirrels, Beavers, Cubs, Scouts, Explorers, Network, and External groups
 - **Destination Management**: Track venues, contacts, and costs
 - **Financial Tracking**: Monitor session costs and payments
@@ -49,8 +49,8 @@ A simplified session management system for the Water Rats watersports group, des
 ### Usage
 
 - **Dashboard**: Overview of upcoming sessions and key metrics
-- **Sessions**: View all sessions, filter by status/group, and sign up as instructor
-- **Instructors**: Manage instructor information and view their upcoming sessions
+- **Sessions**: View all sessions, filter by status/group, and sign up as leader
+- **Leaders**: Manage leader information and view their upcoming sessions
 - **Destinations**: Manage venues and their contact information
 - **Finances**: Track costs and payments for sessions
 
@@ -65,4 +65,4 @@ A simplified session management system for the Water Rats watersports group, des
 
 ## Contributing
 
-This system is designed to be simple and user-friendly for scout leaders and instructors who may not be tech-savvy. When making changes, prioritize simplicity and clear visual feedback.
+This system is designed to be simple and user-friendly for scout leaders and leaders who may not be tech-savvy. When making changes, prioritize simplicity and clear visual feedback.

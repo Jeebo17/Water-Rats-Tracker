@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { format, addDays, startOfWeek } from 'date-fns';
 import { 
@@ -10,40 +10,52 @@ import {
   MapPin,
   User
 } from 'lucide-react';
-import { sessions, instructors, destinations } from '../data/mockData';
+import { sessions, leaders, destinations } from '../data/mockData';
+import { getSessionsForWeek, getUpcomingSessions } from '../firebase/sessions';
+import { Session } from '../types';
 
 const Dashboard: React.FC = () => {
   const today = new Date();
   const weekStart = startOfWeek(today, { weekStartsOn: 1 });
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
-  
-  const upcomingSessions = sessions
-    .filter(session => new Date(session.date) >= today)
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-    .slice(0, 3);
 
-  const thisWeekSessions = sessions.filter(session => {
-    const sessionDate = new Date(session.date);
-    return sessionDate >= weekStart && sessionDate < addDays(weekStart, 7);
-  });
+  const [thisWeekSessions, setThisWeekSessions] = React.useState<Session[]>([]);
+  const [upcomingSessions, setUpcomingSessions] = React.useState<Session[]>([]);
 
-  const totalAttendees = thisWeekSessions.reduce((sum, session) => sum + session.expectedAttendees, 0);
-  const sessionsNeedingInstructors = sessions.filter(session => 
-    session.instructorIds.length === 0 && new Date(session.date) >= today
+  const totalAttendees = thisWeekSessions.reduce((sum, session) => sum + (session.expectedAttendees ?? 0), 0);
+  const sessionsNeedingleaders = sessions.filter(session => 
+    Array.isArray(session.leaderNames) && session.leaderNames.length === 0 && new Date(session.date) >= today
   ).length;
 
+  useEffect(() => {
+    const fetchSessions = async () => {
+      try {
+        const sessionsForWeek = await getSessionsForWeek(today);
+        const sessionsUpcoming = await getUpcomingSessions();
+        setThisWeekSessions(sessionsForWeek);
+        setUpcomingSessions(sessionsUpcoming);
+        console.log(upcomingSessions);
+      } catch (error) {
+        console.error('Error fetching sessions:', error);
+      }
+    };
+
+    fetchSessions();
+  }, []);
+
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-6 rounded-xl shadow-lg">
-        <h1 className="text-3xl font-bold mb-2">Water Rats Dashboard</h1>
+        <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
         <p className="text-blue-100">
-          Welcome back! Here's what's happening this week.
+          Here's what's happening this week.
         </p>
       </div>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           title="This Week's Sessions"
           value={thisWeekSessions.length}
@@ -51,16 +63,16 @@ const Dashboard: React.FC = () => {
           color="bg-blue-500"
           link="/sessions"
         />
-        <StatCard
-          title="Available Instructors"
-          value={instructors.length}
+        {/* <StatCard
+          title="Available leaders"
+          value={leaders.length}
           icon={<UserCheck className="w-6 h-6" />}
           color="bg-green-500"
-          link="/instructors"
-        />
+          link="/leaders"
+        /> */}
         <StatCard
-          title="Need Instructors"
-          value={sessionsNeedingInstructors}
+          title="Need leaders"
+          value={sessionsNeedingleaders}
           icon={<AlertTriangle className="w-6 h-6" />}
           color="bg-purple-500"
           link="/sessions"
@@ -157,9 +169,11 @@ const Dashboard: React.FC = () => {
           <div className="space-y-4">
             {upcomingSessions.map(session => {
               const destination = destinations.find(d => d.id === session.destinationId);
-              const sessionInstructors = session.instructorIds.map(id => 
-                instructors.find(i => i.id === id)
-              ).filter(Boolean);
+              const sessionleaders = Array.isArray(session.leaderNames)
+                ? session.leaderNames.map(name => 
+                    leaders.find(i => i.name === name)
+                  ).filter(Boolean)
+                : [];
               
               return (
                 <div key={session.id} className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
@@ -171,8 +185,8 @@ const Dashboard: React.FC = () => {
                       </span>
                     </div>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      session.status === 'confirmed' ? 'bg-green-100 text-green-800' :
-                      session.status === 'planned' ? 'bg-yellow-100 text-yellow-800' :
+                      session.status === 'Confirmed' ? 'bg-green-100 text-green-800' :
+                      session.status === 'Planning' ? 'bg-yellow-100 text-yellow-800' :
                       'bg-gray-100 text-gray-800'
                     }`}>
                       {session.status}
@@ -189,9 +203,9 @@ const Dashboard: React.FC = () => {
                     </div>
                     <div className="flex items-center">
                       <User className="w-4 h-4 mr-2" />
-                      {sessionInstructors.length > 0 
-                        ? sessionInstructors.map(i => i!.name).join(', ')
-                        : 'No instructors assigned'
+                      {sessionleaders.length > 0 
+                        ? sessionleaders.map(i => i!.name).join(', ')
+                        : 'No leaders assigned'
                       }
                     </div>
                     <div className="flex items-center justify-between">
@@ -209,7 +223,7 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Alerts & Notifications */}
-      <div className="bg-white p-6 rounded-xl shadow-lg">
+      {/* <div className="bg-white p-6 rounded-xl shadow-lg">
         <div className="flex items-center mb-4">
           <AlertTriangle className="w-5 h-5 text-amber-500 mr-2" />
           <h2 className="text-xl font-semibold text-gray-800">Attention Required</h2>
@@ -229,14 +243,14 @@ const Dashboard: React.FC = () => {
           <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
             <div className="flex items-center">
               <AlertTriangle className="w-4 h-4 text-blue-600 mr-2" />
-              <span className="text-blue-800 font-medium">Instructors Needed</span>
+              <span className="text-blue-800 font-medium">Leaders Needed</span>
             </div>
             <p className="text-blue-700 text-sm mt-1">
-              Water Safety Course session needs instructors. Check the sessions page to sign up.
+              Water Safety Course session needs leaders. Check the sessions page to sign up.
             </p>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

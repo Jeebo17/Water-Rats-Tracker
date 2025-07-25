@@ -1,5 +1,6 @@
-export interface Instructor {
-  id: string;
+import { Timestamp } from 'firebase/firestore';
+
+export interface Leader {
   name: string;
   email: string;
   phone: string;
@@ -21,19 +22,21 @@ export interface Destination {
 
 export interface Session {
   id: string;
-  date: string;
-  time: string;
+  dbDate: Timestamp;
+  date: string | "TBD";
+  time: string | "TBD";
   activity: string;
-  groupType: 'Squirrels' | 'Beavers' | 'Cubs' | 'Scouts' | 'Explorers' | 'Network' | 'External';
-  destinationId: string;
-  instructorIds: string[]; // Multiple instructors can sign up
-  maxParticipants: number;
-  expectedAttendees: number;
-  cost: number;
-  status: 'planned' | 'confirmed' | 'completed' | 'cancelled';
+  groupType: 'Squirrels' | 'Beavers' | 'Cubs' | 'Scouts' | 'Explorers' | 'Network' | 'External' | 'Mixed';
+  destinationId: string | "TBD";
+  leaderNames?: string[];
+  leaderInCharge: string;
+  maxParticipants?: number;
+  expectedAttendees?: number;
+  cost?: number;
+  status: 'Planning' | 'Confirmed' | 'Completed' | 'Cancelled';
   weatherConditions?: string;
   notes?: string;
-  equipment: string[];
+  equipment?: string[];
 }
 
 export interface FinancialRecord {
