@@ -156,7 +156,7 @@ interface SessionCardProps {
 }
 
 const SessionCard: React.FC<SessionCardProps> = ({ session, setSessions }) => {
-  const destination = destinations.find(d => d.id === session.destinationId);
+  const destination = destinations.find(d => d.id === session.location);
 
   const statusConfig = {
     Planning: { color: 'bg-yellow-100 text-yellow-800', icon: Clock },
