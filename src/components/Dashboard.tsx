@@ -25,8 +25,8 @@ const Dashboard: React.FC = () => {
   const [upcomingSessions, setUpcomingSessions] = React.useState<Session[]>([]);
 
   const totalAttendees = thisWeekSessions.reduce((sum, session) => sum + (session.expectedAttendees ?? 0), 0);
-  const sessionsNeedingInstructors = upcomingSessions.filter(session => 
-    !session.instructorNames || session.instructorNames.length === 0
+  const sessionsNeedingLeaders = upcomingSessions.filter(session => 
+    !session.leaderNames || session.leaderNames.length === 0
   ).length;
   const confirmedSessions = upcomingSessions.filter(session => session.status === 'Confirmed').length;
   const totalUpcomingSessions = upcomingSessions.length;
@@ -68,7 +68,7 @@ const Dashboard: React.FC = () => {
         />
         <StatCard
           title="Need Staff"
-          value={sessionsNeedingleaders}
+          value={sessionsNeedingLeaders}
           icon={<AlertTriangle className="w-6 h-6" />}
           color="bg-orange-500"
           link="/sessions"
@@ -201,8 +201,8 @@ const Dashboard: React.FC = () => {
                     </div>
                     <div className="flex items-center">
                       <User className="w-3 h-3 mr-2" />
-                        {sessionleaders.length > 0 
-                        ? sessionleaders.join(', ')
+                        {session.leaderNames && session.leaderNames.length > 0 
+                        ? session.leaderNames.join(', ')
                         : 'No staff assigned'
                         }
                     </div>
