@@ -8,8 +8,7 @@ import {
   AlertTriangle,
   Wrench
 } from 'lucide-react';
-import { destinations } from '../data/mockData';
-import { Destination } from '../types';
+import { Location } from '../types';
 
 const Destinations: React.FC = () => {
   return (
@@ -28,33 +27,26 @@ const Destinations: React.FC = () => {
 
       {/* Destinations Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {destinations.map(destination => (
-          <DestinationCard key={destination.id} destination={destination} />
+        {locations.map(location => (
+          <DestinationCard key={location.id} location={location} />
         ))}
       </div>
     </div>
   );
 };
 
-interface DestinationCardProps {
-  destination: Destination;
+interface LocationCardProps {
+  location: Location;
 }
 
-const DestinationCard: React.FC<DestinationCardProps> = ({ destination }) => {
-  const typeConfig = {
-    lake: { color: 'bg-blue-100 text-blue-800', emoji: '🏞️' },
-    river: { color: 'bg-green-100 text-green-800', emoji: '🏞️' },
-    pool: { color: 'bg-cyan-100 text-cyan-800', emoji: '🏊' },
-    sea: { color: 'bg-indigo-100 text-indigo-800', emoji: '🌊' }
-  };
-
+const LocationCard: React.FC<LocationCardProps> = ({ location }) => {
   return (
     <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h3 className="text-xl font-semibold text-gray-800 mb-2">{destination.name}</h3>
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${typeConfig[destination.type].color}`}>
-            {typeConfig[destination.type].emoji} {destination.type}
+          <h3 className="text-xl font-semibold text-gray-800 mb-2">{location.name}</h3>
+          <span className={`px-2 py-1 rounded-full text-xs font-medium ${typeConfig[location.type].color}`}>
+            {typeConfig[location.type].emoji} {location.type}
           </span>
         </div>
         <div className="text-right">

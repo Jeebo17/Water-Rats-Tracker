@@ -69,6 +69,7 @@ export const getSessionsForWeek = async (day: Date): Promise<Session[]> => {
     console.error('Error getting sessions for week:', error);
     throw error;
   }
+  
 };
 
 // Get next 5 upcoming sessions

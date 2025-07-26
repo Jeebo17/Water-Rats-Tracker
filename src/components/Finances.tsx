@@ -8,7 +8,6 @@ import {
   Filter,
   Calendar
 } from 'lucide-react';
-import { financialRecords, destinations } from '../data/mockData';
 import { FinancialRecord } from '../types';
 
 const Finances: React.FC = () => {
@@ -170,8 +169,8 @@ interface FinancialRowProps {
 }
 
 const FinancialRow: React.FC<FinancialRowProps> = ({ record }) => {
-  const destination = record.destinationId 
-    ? destinations.find(d => d.id === record.destinationId)
+  const destination = record.location 
+    ? destinations.find(d => d.id === record.location)
     : null;
 
   const typeConfig = {

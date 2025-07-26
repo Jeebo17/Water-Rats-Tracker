@@ -6,10 +6,8 @@ export interface Leader {
   phone: string;
 }
 
-export interface Destination {
-  id: string;
+export interface Location {
   name: string;
-  type: 'lake' | 'river' | 'pool' | 'sea';
   contactName: string;
   contactEmail: string;
   contactPhone: string;
@@ -27,7 +25,7 @@ export interface Session {
   time: string | "TBD";
   activity: string;
   groupType: 'Squirrels' | 'Beavers' | 'Cubs' | 'Scouts' | 'Explorers' | 'Network' | 'External' | 'Mixed';
-  destinationId: string | "TBD";
+  location: string | "TBD";
   leaderNames?: string[];
   leaderInCharge: string;
   maxParticipants?: number;
@@ -46,6 +44,6 @@ export interface FinancialRecord {
   category: 'venue' | 'equipment' | 'session_fees' | 'insurance' | 'other';
   amount: number;
   description: string;
-  destinationId?: string;
+  location?: string;
   sessionId?: string;
 }

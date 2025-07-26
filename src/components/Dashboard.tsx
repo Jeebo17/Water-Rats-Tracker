@@ -10,9 +10,9 @@ import {
   MapPin,
   User
 } from 'lucide-react';
-import { sessions, leaders, destinations } from '../data/mockData';
 import { getSessionsForWeek, getUpcomingSessions } from '../firebase/sessions';
 import { Session } from '../types';
+
 
 const Dashboard: React.FC = () => {
   const today = new Date();
@@ -23,7 +23,7 @@ const Dashboard: React.FC = () => {
   const [upcomingSessions, setUpcomingSessions] = React.useState<Session[]>([]);
 
   const totalAttendees = thisWeekSessions.reduce((sum, session) => sum + (session.expectedAttendees ?? 0), 0);
-  const sessionsNeedingleaders = sessions.filter(session => 
+  const sessionsNeedingleaders = thisWeekSessions.filter(session => 
     Array.isArray(session.leaderNames) && session.leaderNames.length === 0 && new Date(session.date) >= today
   ).length;
 
@@ -34,7 +34,6 @@ const Dashboard: React.FC = () => {
         const sessionsUpcoming = await getUpcomingSessions();
         setThisWeekSessions(sessionsForWeek);
         setUpcomingSessions(sessionsUpcoming);
-        console.log(upcomingSessions);
       } catch (error) {
         console.error('Error fetching sessions:', error);
       }
@@ -131,7 +130,7 @@ const Dashboard: React.FC = () => {
                           </span>
                           <span className="flex items-center">
                             <MapPin className="w-4 h-4 mr-1" />
-                            {destinations.find(d => d.id === daySession.destinationId)?.name}
+                            {daySession.location}
                           </span>
                           </div>
                         </div>
@@ -168,13 +167,8 @@ const Dashboard: React.FC = () => {
           
           <div className="space-y-4">
             {upcomingSessions.map(session => {
-              const destination = destinations.find(d => d.id === session.destinationId);
-              const sessionleaders = Array.isArray(session.leaderNames)
-                ? session.leaderNames.map(name => 
-                    leaders.find(i => i.name === name)
-                  ).filter(Boolean)
-                : [];
-              
+                const sessionleaders = session.leaderNames || [];
+
               return (
                 <div key={session.id} className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between mb-2">
@@ -199,14 +193,14 @@ const Dashboard: React.FC = () => {
                     </div>
                     <div className="flex items-center">
                       <MapPin className="w-4 h-4 mr-2" />
-                      {destination?.name}
+                      {session?.location}
                     </div>
                     <div className="flex items-center">
                       <User className="w-4 h-4 mr-2" />
-                      {sessionleaders.length > 0 
-                        ? sessionleaders.map(i => i!.name).join(', ')
+                        {sessionleaders.length > 0 
+                        ? sessionleaders.join(', ')
                         : 'No leaders assigned'
-                      }
+                        }
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">

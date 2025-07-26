@@ -13,7 +13,6 @@ import {
   XCircle,
   UserCheck,
 } from 'lucide-react';
-import { destinations } from '../data/mockData';
 import { Session } from '../types';
 import { getSessions, addSession, deleteSession } from '../firebase/sessions';
 import { sessionsToAdd } from '../data/uploadedData';
@@ -156,8 +155,6 @@ interface SessionCardProps {
 }
 
 const SessionCard: React.FC<SessionCardProps> = ({ session, setSessions }) => {
-  const destination = destinations.find(d => d.id === session.destinationId);
-
   const statusConfig = {
     Planning: { color: 'bg-yellow-100 text-yellow-800', icon: Clock },
     Confirmed: { color: 'bg-green-100 text-green-800', icon: CheckCircle },
@@ -235,7 +232,7 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, setSessions }) => {
               
               <div className="flex items-center text-gray-700">
                 <MapPin className="w-5 h-5 mr-3 text-gray-400" />
-                <span className="text-lg">{destination?.name || 'Unknown venue'}</span>
+                <span className="text-lg">{session.location}</span>
               </div>
             </div>
 

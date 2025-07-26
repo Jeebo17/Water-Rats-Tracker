@@ -6,8 +6,7 @@ import {
   Mail,
   Calendar
 } from 'lucide-react';
-import { leaders, sessions } from '../data/mockData';
-import { leader } from '../types';
+import { Leader } from '../types';
 import { format } from 'date-fns';
 
 const Leaders: React.FC = () => {
