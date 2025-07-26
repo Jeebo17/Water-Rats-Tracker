@@ -127,12 +127,12 @@ export const deleteSession = async (sessionId: string): Promise<void> => {
   }
 };
 
-// Sign up leader for session
-export const signUpleader = async (sessionId: string, leaderId: string): Promise<void> => {
+// Sign up instructor for session  
+export const signUpInstructor = async (sessionId: string, instructorName: string): Promise<void> => {
   try {
     const sessionRef = doc(db, SESSIONS_COLLECTION, sessionId);
     await updateDoc(sessionRef, {
-      leaderIds: arrayUnion(leaderId)
+      instructorNames: arrayUnion(instructorName)
     });
   } catch (error) {
     console.error('Error signing up leader:', error);
@@ -140,12 +140,12 @@ export const signUpleader = async (sessionId: string, leaderId: string): Promise
   }
 };
 
-// Remove leader from session
-export const removeleader = async (sessionId: string, leaderId: string): Promise<void> => {
+// Remove instructor from session  
+export const removeInstructor = async (sessionId: string, instructorName: string): Promise<void> => {
   try {
     const sessionRef = doc(db, SESSIONS_COLLECTION, sessionId);
     await updateDoc(sessionRef, {
-      leaderIds: arrayRemove(leaderId)
+      instructorNames: arrayRemove(instructorName)
     });
   } catch (error) {
     console.error('Error removing leader:', error);

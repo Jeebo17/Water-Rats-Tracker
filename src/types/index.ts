@@ -20,6 +20,7 @@ export interface Location {
 
 export interface Session {
   id: string;
+  dbDate?: any; // Firestore Timestamp
   dbDate: Timestamp;
   date: string | "TBD";
   time: string | "TBD";
