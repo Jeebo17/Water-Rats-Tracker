@@ -44,7 +44,7 @@ const Sessions: React.FC = () => {
     const matchesStatus = filter === 'All' || session.status === filter;
     const matchesGroup = groupFilter === 'All' || session.groupType === groupFilter;
     return matchesStatus && matchesGroup;
-  }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   useEffect(() => {
     const fetchSessions = async () => {
@@ -226,11 +226,11 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, onDelete, onEdit }) 
   };
 
   const StatusIcon = session.status ? statusConfig[session.status]?.icon : Clock;
-  const needsInstructors = !session.instructorNames || session.instructorNames.length === 0;
+  const needsLeaders = !session.leaderNames || session.leaderNames.length === 0;
 
   return (
     <div className={`bg-white p-4 rounded-xl shadow-lg ${
-      needsInstructors ? 'border-l-4 border-orange-400' : ''
+      needsLeaders ? 'border-l-4 border-orange-400' : ''
     }`}>
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
@@ -291,34 +291,34 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, onDelete, onEdit }) 
         )}
       </div>
 
-      {/* Instructors Section */}
+      {/* Leaders Section */}
       <div className="mb-3">
         <h4 className="font-medium text-gray-800 mb-2 flex items-center text-sm">
           <UserCheck className="w-4 h-4 mr-1" />
-          Instructors
-          {needsInstructors && (
+          Leaders
+          {needsLeaders && (
             <span className="ml-2 px-2 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded-full">
               NEEDED
             </span>
           )}
         </h4>
 
-        {session.instructorNames && session.instructorNames.length > 0 ? (
+        {session.leaderNames && session.leaderNames.length > 0 ? (
           <div className="flex flex-wrap gap-1 mb-2">
-            {session.instructorNames.map((instructor) => (
-              <span key={instructor} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
-                {instructor}
+            {session.leaderNames.map((leader) => (
+              <span key={leader} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+                {leader}
               </span>
             ))}
           </div>
         ) : (
           <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg mb-2">
-            <p className="text-orange-800 font-medium text-sm mb-2">No instructors assigned</p>
+            <p className="text-orange-800 font-medium text-sm mb-2">No leaders assigned</p>
           </div>
         )}
 
         <button className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm">
-          Sign Up as Instructor
+          Sign Up as Leader
         </button>
       </div>
 
@@ -474,6 +474,39 @@ const EditSessionModal: React.FC<{
           </div>
 
           <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Leaders</label>
+            <input
+              type="text"
+              value={formData.leaderNames?.join(', ') || ''}
+              onChange={(e) => setFormData({...formData, leaderNames: e.target.value.split(',').map(name => name.trim()).filter(name => name)})}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Enter leader names separated by commas"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Leader in Charge</label>
+            <input
+              type="text"
+              value={formData.leaderInCharge || ''}
+              onChange={(e) => setFormData({...formData, leaderInCharge: e.target.value})}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Main leader responsible"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Max Participants</label>
+            <input
+              type="number"
+              value={formData.maxParticipants || ''}
+              onChange={(e) => setFormData({...formData, maxParticipants: parseInt(e.target.value) || undefined})}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Maximum number of participants"
+            />
+          </div>
+
+          <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
             <textarea
               value={formData.notes || ''}
@@ -526,8 +559,8 @@ const AddSessionModal: React.FC<{
     const newSession: Session = {
       id: `${formData.date}-${formData.activity}-${formData.groupType}`,
       ...formData,
-      instructorNames: [],
-      instructorInCharge: ''
+      leaderNames: [],
+      leaderInCharge: ''
     };
     onSave(newSession);
   };
