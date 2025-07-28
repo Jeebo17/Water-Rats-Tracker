@@ -37,6 +37,7 @@ const Sessions: React.FC = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showUpdateStatusModal, setShowUpdateStatusModal] = useState<Session | null>(null);
   const [showSignUpModal, setShowSignUpModal] = useState<Session | null>(null);
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
 
   const groupTypes = ['All', 'Squirrels', 'Beavers', 'Cubs', 'Scouts', 'Explorers', 'Network', 'External'];
 
@@ -49,6 +50,11 @@ const Sessions: React.FC = () => {
   const sessionsToShow = showPreviousSessions ? sessions : upcomingSessions;
 
   const filteredSessions = sessionsToShow.filter(session => {
+    // If a specific session is selected from calendar, only show that session
+    if (selectedSessionId) {
+      return session.id === selectedSessionId;
+    }
+    
     const matchesStatus = filter === 'All' || session.status === filter;
     const matchesGroup = groupFilter === 'All' || session.groupType === groupFilter;
     return matchesStatus && matchesGroup;
@@ -100,8 +106,18 @@ const Sessions: React.FC = () => {
       {/* View Controls */}
       {viewMode === 'list' ? (
         <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
-          <div className="text-sm text-gray-600">
-            Showing <span className="font-medium">{filteredSessions.length}</span> sessions
+          <div className="flex items-center space-x-3">
+            <div className="text-sm text-gray-600">
+              Showing <span className="font-medium">{filteredSessions.length}</span> sessions
+            </div>
+            {selectedSessionId && (
+              <button
+                onClick={() => setSelectedSessionId(null)}
+                className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full hover:bg-blue-200 transition-colors"
+              >
+                Clear Filter
+              </button>
+            )}
           </div>
           <button
             onClick={() => setShowPreviousSessions(!showPreviousSessions)}
@@ -195,7 +211,10 @@ const Sessions: React.FC = () => {
         <CalendarView 
           sessions={filteredSessions}
           currentMonth={currentMonth}
-          onSessionClick={(session) => setShowEditModal(session)}
+          onSessionClick={(session) => {
+            setViewMode('list');
+            setSelectedSessionId(session.id);
+          }}
         />
       )}
 
