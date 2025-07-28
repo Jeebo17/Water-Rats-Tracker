@@ -25,11 +25,10 @@ const Dashboard: React.FC = () => {
   const [upcomingSessions, setUpcomingSessions] = React.useState<Session[]>([]);
 
   const totalAttendees = thisWeekSessions.reduce((sum, session) => sum + (session.expectedAttendees ?? 0), 0);
-  const sessionsNeedingLeaders = upcomingSessions.filter(session => 
+  const sessionsNeedingLeaders = thisWeekSessions.filter(session => 
     !session.leaderNames || session.leaderNames.length === 0
   ).length;
-  const confirmedSessions = upcomingSessions.filter(session => session.status === 'Confirmed').length;
-  const totalUpcomingSessions = upcomingSessions.length;
+  const confirmedSessions = thisWeekSessions.filter(session => session.status === 'Confirmed').length;
 
   useEffect(() => {
     const fetchSessions = async () => {
@@ -53,7 +52,7 @@ const Dashboard: React.FC = () => {
       <div className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-4 rounded-xl shadow-lg">
         <h1 className="text-2xl font-bold mb-1">Water Rats Dashboard</h1>
         <p className="text-blue-100">
-          Session overview and quick stats
+          This weeks session overview and quick stats
         </p>
       </div>
 
@@ -67,7 +66,7 @@ const Dashboard: React.FC = () => {
           link="/sessions"
         />
         <StatCard
-          title="Need Staff"
+          title="Need Leaders"
           value={sessionsNeedingLeaders}
           icon={<AlertTriangle className="w-6 h-6" />}
           color="bg-orange-500"
@@ -170,9 +169,7 @@ const Dashboard: React.FC = () => {
           </div>
           
           <div className="space-y-4">
-            {upcomingSessions.slice(0, 4).map(session => {
-                const sessionInstructors = session.instructorNames || [];
-
+            {upcomingSessions.slice(0, 5).map(session => {
               return (
                 <div key={session.id} className="p-3 border border-gray-200 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
@@ -203,7 +200,7 @@ const Dashboard: React.FC = () => {
                       <User className="w-3 h-3 mr-2" />
                         {session.leaderNames && session.leaderNames.length > 0 
                         ? session.leaderNames.join(', ')
-                        : 'No staff assigned'
+                        : 'No leaders assigned'
                         }
                     </div>
                     {session.expectedAttendees && (
@@ -222,7 +219,7 @@ const Dashboard: React.FC = () => {
                   to="/sessions" 
                   className="text-blue-600 hover:text-blue-800 text-sm font-medium"
                 >
-                  View {upcomingSessions.length - 4} more sessions →
+                  View more sessions →
                 </Link>
               </div>
             )}

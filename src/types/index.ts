@@ -28,8 +28,8 @@ export interface Session {
   location: string | "TBD";
   leaderNames?: string[];
   leaderInCharge: string;
-  maxParticipants?: number;
-  expectedAttendees?: number;
+  maxParticipants?: number | 0;
+  expectedAttendees?: number | 0;
   cost?: number;
   status: 'Planning' | 'Confirmed' | 'Completed' | 'Cancelled';
   weatherConditions?: string;

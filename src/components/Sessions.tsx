@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { format } from 'date-fns';
+import { format, set } from 'date-fns';
 import { 
   Plus, 
   Filter, 
@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { Session } from '../types';
 import { getSessions, addSession, deleteSession, updateSession } from '../firebase/sessions';
+import { Timestamp } from 'firebase/firestore';
 
 const Sessions: React.FC = () => {
   const [filter, setFilter] = useState<'All' | 'Planning' | 'Confirmed' | 'Completed' | 'Cancelled'>('All');
@@ -29,6 +30,8 @@ const Sessions: React.FC = () => {
   const [showDeleteModal, setShowDeleteModal] = useState<string | null>(null);
   const [showEditModal, setShowEditModal] = useState<Session | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showUpdateStatusModal, setShowUpdateStatusModal] = useState<Session | null>(null);
+  const [showSignUpModal, setShowSignUpModal] = useState<Session | null>(null);
 
   const groupTypes = ['All', 'Squirrels', 'Beavers', 'Cubs', 'Scouts', 'Explorers', 'Network', 'External'];
 
@@ -150,6 +153,8 @@ const Sessions: React.FC = () => {
             setSessions={setSessions}
             onDelete={() => setShowDeleteModal(session.id)}
             onEdit={() => setShowEditModal(session)}
+            onStatusUpdate={() => setShowUpdateStatusModal(session)}
+            onSignUp={() => setShowSignUpModal(session)}
           />
         ))}
       </div>
@@ -196,6 +201,35 @@ const Sessions: React.FC = () => {
           onCancel={() => setShowAddModal(false)}
         />
       )}
+
+      {/* Update Status Modal */}
+      {showUpdateStatusModal && (
+        <UpdateStatusModal
+          session={showUpdateStatusModal}
+          onSave={async (updatedSession) => {
+            await updateSession(updatedSession.id, updatedSession);
+            const updatedSessions = await getSessions();
+            setSessions(updatedSessions);
+            setShowUpdateStatusModal(null);
+          }}
+          onCancel={() => setShowUpdateStatusModal(null)}
+        />
+      )}
+
+      {/* Sign Up as Leader Modal */}
+      {showSignUpModal && (
+        <SignUpModal
+          session={showSignUpModal}
+          onSave={async (updatedSession) => {
+            await updateSession(updatedSession.id, updatedSession);
+            const updatedSessions = await getSessions();
+            setSessions(updatedSessions);
+            setShowSignUpModal(null);
+          }}
+          onCancel={() => setShowSignUpModal(null)}
+        />
+      )}
+
     </div>
   );
 };
@@ -205,9 +239,11 @@ interface SessionCardProps {
   setSessions: React.Dispatch<React.SetStateAction<Session[]>>;
   onDelete: () => void;
   onEdit: () => void;
+  onStatusUpdate: () => void;
+  onSignUp: () => void;
 }
 
-const SessionCard: React.FC<SessionCardProps> = ({ session, onDelete, onEdit }) => {
+const SessionCard: React.FC<SessionCardProps> = ({ session, onDelete, onEdit, onStatusUpdate, onSignUp }) => {
   const statusConfig = {
     Planning: { color: 'bg-yellow-100 text-yellow-800', icon: Clock },
     Confirmed: { color: 'bg-green-100 text-green-800', icon: CheckCircle },
@@ -222,7 +258,8 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, onDelete, onEdit }) 
     'Scouts': 'bg-green-100 text-green-800',
     'Explorers': 'bg-purple-100 text-purple-800',
     'Network': 'bg-indigo-100 text-indigo-800',
-    'External': 'bg-gray-100 text-gray-800'
+    'External': 'bg-gray-100 text-gray-800',
+    'Mixed': 'bg-gray-200 text-gray-800'
   };
 
   const StatusIcon = session.status ? statusConfig[session.status]?.icon : Clock;
@@ -240,7 +277,10 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, onDelete, onEdit }) 
             <span className={`px-2 py-1 rounded-full text-xs font-medium ${groupTypeColors[session.groupType]}`}>
               {session.groupType}
             </span>
-            <span className={`px-2 py-1 rounded-full text-xs font-medium flex items-center space-x-1 ${statusConfig[session.status]?.color}`}>
+            <span 
+              className={`px-2 py-1 rounded-full text-xs font-medium flex items-center space-x-1 ${statusConfig[session.status]?.color}`}
+              onClick={onStatusUpdate}
+            >
               <StatusIcon className="w-3 h-3" />
               <span>{session.status}</span>
             </span>
@@ -279,16 +319,15 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, onDelete, onEdit }) 
           <span className="text-sm">{session.location}</span>
         </div>
 
-        {session.expectedAttendees && (
-          <div className="flex items-center text-gray-700">
-            <Users className="w-4 h-4 mr-2 text-gray-400" />
-            <span className="text-sm">
-              {session.expectedAttendees}
-              {session.maxParticipants ? `/${session.maxParticipants}` : ''}
-              {' participants'}
-            </span>
-          </div>
-        )}
+        <div className="flex items-center text-gray-700">
+          <Users className="w-4 h-4 mr-2 text-gray-400" />
+          <span className="text-sm">
+            {session.expectedAttendees}
+            {session.maxParticipants ? `/${session.maxParticipants}` : ''}
+            {' participants'}
+          </span>
+        </div>
+
       </div>
 
       {/* Leaders Section */}
@@ -299,6 +338,11 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, onDelete, onEdit }) 
           {needsLeaders && (
             <span className="ml-2 px-2 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded-full">
               NEEDED
+            </span>
+          )}
+          {session.leaderNames && session.leaderNames.length > 0 && (
+            <span className="ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+              {session.leaderNames.length} total {/* Leader{session.leaderNames.length > 1 ? 's' : ''} */}
             </span>
           )}
         </h4>
@@ -317,8 +361,11 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, onDelete, onEdit }) 
           </div>
         )}
 
-        <button className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm">
-          Sign Up as Leader
+        <button 
+          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+          onClick={onSignUp}
+        >
+          Sign Up as a Leader
         </button>
       </div>
 
@@ -368,10 +415,21 @@ const EditSessionModal: React.FC<{
   onCancel: () => void;
 }> = ({ session, onSave, onCancel }) => {
   const [formData, setFormData] = useState(session);
+  const [leaderInput, setLeaderInput] = useState(session.leaderNames?.join(', ') || '');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+    const leaderNames = leaderInput
+      .split(',')
+      .map(name => name.trim())
+      .filter(name => name);
+
+    const time = formData.time?.trim() ? formData.time : "TBD";
+    const location = formData.location?.trim() ? formData.location : "TBD";
+    const expectedAttendees = formData.expectedAttendees !== undefined ? formData.expectedAttendees : 0;
+    const dbDate = Timestamp.fromDate(new Date(formData.date));
+
+    onSave({ ...formData, leaderNames, time, location, expectedAttendees, dbDate });
   };
 
   return (
@@ -386,7 +444,7 @@ const EditSessionModal: React.FC<{
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Activity</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Activity<span className="text-red-500 ml-1">*</span></label>
             <input
               type="text"
               value={formData.activity}
@@ -397,7 +455,7 @@ const EditSessionModal: React.FC<{
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Date<span className="text-red-500 ml-1">*</span></label>
             <input
               type="date"
               value={formData.date}
@@ -415,7 +473,6 @@ const EditSessionModal: React.FC<{
               onChange={(e) => setFormData({...formData, time: e.target.value})}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="e.g., 10:00-12:00"
-              required
             />
           </div>
 
@@ -444,7 +501,6 @@ const EditSessionModal: React.FC<{
               value={formData.location}
               onChange={(e) => setFormData({...formData, location: e.target.value})}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              required
             />
           </div>
 
@@ -452,9 +508,15 @@ const EditSessionModal: React.FC<{
             <label className="block text-sm font-medium text-gray-700 mb-1">Expected Attendees</label>
             <input
               type="number"
-              value={formData.expectedAttendees || ''}
-              onChange={(e) => setFormData({...formData, expectedAttendees: parseInt(e.target.value) || undefined})}
+              value={formData.expectedAttendees ?? ''}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  expectedAttendees: e.target.value === '' ? undefined : parseInt(e.target.value),
+                })
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Number of participants"
             />
           </div>
 
@@ -475,27 +537,16 @@ const EditSessionModal: React.FC<{
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Leaders</label>
-            <input
-              type="text"
-              value={formData.leaderNames?.join(', ') || ''}
-              onChange={(e) => setFormData({...formData, leaderNames: e.target.value.split(',').map(name => name.trim()).filter(name => name)})}
+            <textarea
+              value={leaderInput}
+              onChange={(e) => setLeaderInput(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Enter leader names separated by commas"
+              placeholder="Enter leader names separated by commas, e.g. John, Jane"
+              rows={2}
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Leader in Charge</label>
-            <input
-              type="text"
-              value={formData.leaderInCharge || ''}
-              onChange={(e) => setFormData({...formData, leaderInCharge: e.target.value})}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Main leader responsible"
-            />
-          </div>
-
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Max Participants</label>
             <input
               type="number"
@@ -504,7 +555,7 @@ const EditSessionModal: React.FC<{
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Maximum number of participants"
             />
-          </div>
+          </div> */}
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
@@ -513,6 +564,18 @@ const EditSessionModal: React.FC<{
               onChange={(e) => setFormData({...formData, notes: e.target.value})}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               rows={3}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Leader in Charge<span className="text-red-500 ml-1">*</span></label>
+            <input
+              type="text"
+              value={formData.leaderInCharge || ''}
+              onChange={(e) => setFormData({...formData, leaderInCharge: e.target.value})}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Main leader responsible"
+              required
             />
           </div>
 
@@ -551,17 +614,28 @@ const AddSessionModal: React.FC<{
     location: '',
     expectedAttendees: undefined as number | undefined,
     status: 'Planning' as Session['status'],
-    notes: ''
+    notes: '',
+    leaderInCharge: '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+
+    const time = formData.time?.trim() ? formData.time : "TBD";
+    const location = formData.location?.trim() ? formData.location : "TBD";
+    const expectedAttendees = formData.expectedAttendees !== undefined ? formData.expectedAttendees : 0;
+
     const newSession: Session = {
       id: `${formData.date}-${formData.activity}-${formData.groupType}`,
       ...formData,
       leaderNames: [],
-      leaderInCharge: ''
+      dbDate: Timestamp.fromDate(new Date(formData.date)),
+      time,
+      location,
+      expectedAttendees,
     };
+
     onSave(newSession);
   };
 
@@ -577,22 +651,34 @@ const AddSessionModal: React.FC<{
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Activity</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Activity<span className="text-red-500 ml-1">*</span></label>
             <input
               type="text"
               value={formData.activity}
               onChange={(e) => setFormData({...formData, activity: e.target.value})}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="e.g., SUP Session"
+              placeholder="e.g. SUP Session"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Leader In Charge<span className="text-red-500 ml-1">*</span></label>
+            <input
+              type="text"
+              value={formData.leaderInCharge}
+              onChange={(e) => setFormData({...formData, leaderInCharge: e.target.value})}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="e.g. John (First name only)"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Date<span className="text-red-500 ml-1">*</span></label>
             <input
               type="date"
-              value={formData.date}
+              value={formData.date ?? "TBD"}
               onChange={(e) => setFormData({...formData, date: e.target.value})}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
@@ -603,11 +689,10 @@ const AddSessionModal: React.FC<{
             <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
             <input
               type="text"
-              value={formData.time}
+              value={formData.time ?? "TBD"}
               onChange={(e) => setFormData({...formData, time: e.target.value})}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="e.g., 10:00-12:00"
-              required
+              placeholder="e.g. 10:00-12:00"
             />
           </div>
 
@@ -633,11 +718,10 @@ const AddSessionModal: React.FC<{
             <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
             <input
               type="text"
-              value={formData.location}
+              value={formData.location ?? "TBD"}
               onChange={(e) => setFormData({...formData, location: e.target.value})}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="e.g., Lake, Harbour"
-              required
+              placeholder="e.g. Lake, Harbour"
             />
           </div>
 
@@ -645,8 +729,13 @@ const AddSessionModal: React.FC<{
             <label className="block text-sm font-medium text-gray-700 mb-1">Expected Attendees</label>
             <input
               type="number"
-              value={formData.expectedAttendees || ''}
-              onChange={(e) => setFormData({...formData, expectedAttendees: parseInt(e.target.value) || undefined})}
+              value={formData.expectedAttendees ?? ''}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  expectedAttendees: e.target.value === '' ? undefined : parseInt(e.target.value),
+                })
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Number of participants"
             />
@@ -686,3 +775,130 @@ const AddSessionModal: React.FC<{
 };
 
 export default Sessions;
+
+// Update status modal
+const UpdateStatusModal: React.FC<{
+  session: Session;
+  onSave: (session: Session) => void;
+  onCancel: () => void;
+}> = ({ session, onSave, onCancel }) => {
+  const [formData, setFormData] = useState(session);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSave(formData);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-800">Update Status</h3>
+          <button onClick={onCancel} className="p-1 hover:bg-gray-100 rounded">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            <select
+              value={formData.status}
+              onChange={(e) => setFormData({...formData, status: e.target.value as any})}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+            >
+              <option value="Planning">Planning</option>
+              <option value="Confirmed">Confirmed</option>
+              <option value="Completed">Completed</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
+          </div>
+
+          <div className="flex space-x-3 pt-4">
+            <button
+              type="button"
+              onClick={onCancel}
+              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
+            >
+              <Save className="w-4 h-4" />
+              <span>Save</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+
+// Sign up as leader Modal
+const SignUpModal: React.FC<{
+  session: Session;
+  onSave: (session: Session) => void;
+  onCancel: () => void;
+}> = ({ session, onSave, onCancel }) => {
+  const [formData, setFormData] = useState(session);
+  const [leaderInput, setLeaderInput] = useState(session.leaderNames?.join(', ') || '');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const leaderNames = leaderInput
+      .split(',')
+      .map(name => name.trim())
+      .filter(name => name);
+
+    onSave({ ...formData, leaderNames });
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-800">Edit Session</h3>
+          <button onClick={onCancel} className="p-1 hover:bg-gray-100 rounded">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Leaders</label>
+            <textarea
+              value={leaderInput}
+              onChange={(e) => setLeaderInput(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Enter leader names separated by commas, e.g. John, Jane"
+              rows={2}
+            />
+          </div>
+
+
+          <div className="flex space-x-3 pt-4">
+            <button
+              type="button"
+              onClick={onCancel}
+              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
+            >
+              <Save className="w-4 h-4" />
+              <span>Save</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
