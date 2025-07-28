@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { format, set } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths } from 'date-fns';
 import { 
   Plus, 
   Filter, 
@@ -15,7 +15,10 @@ import {
   Eye,
   EyeOff,
   X,
-  Save
+  Save,
+  ChevronLeft,
+  ChevronRight,
+  List
 } from 'lucide-react';
 import { Session } from '../types';
 import { getSessions, addSession, deleteSession, updateSession } from '../firebase/sessions';
@@ -26,6 +29,8 @@ const Sessions: React.FC = () => {
   const [groupFilter, setGroupFilter] = useState<string>('All');
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [showPreviousSessions, setShowPreviousSessions] = useState(false);
+  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
+  const [currentMonth, setCurrentMonth] = useState(new Date());
   const [sessions, setSessions] = useState<Session[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState<string | null>(null);
   const [showEditModal, setShowEditModal] = useState<Session | null>(null);
@@ -79,25 +84,52 @@ const Sessions: React.FC = () => {
 
         <button 
           className="w-12 h-12 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center"
+          onClick={() => setViewMode(viewMode === 'list' ? 'calendar' : 'list')}
+        >
+          {viewMode === 'list' ? <Calendar className="w-5 h-5" /> : <List className="w-5 h-5" />}
+        </button>
+
+        <button 
+          className="w-12 h-12 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center"
           onClick={() => setShowFilterDropdown(!showFilterDropdown)}
         >
           <Filter className="w-5 h-5" />
         </button>
       </div>
 
-      {/* Show Previous Sessions Toggle */}
-      <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
-        <div className="text-sm text-gray-600">
-          Showing <span className="font-medium">{filteredSessions.length}</span> sessions
+      {/* View Controls */}
+      {viewMode === 'list' ? (
+        <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+          <div className="text-sm text-gray-600">
+            Showing <span className="font-medium">{filteredSessions.length}</span> sessions
+          </div>
+          <button
+            onClick={() => setShowPreviousSessions(!showPreviousSessions)}
+            className="flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-800 font-medium"
+          >
+            {showPreviousSessions ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            <span>{showPreviousSessions ? 'Hide Previous' : 'Show Previous'}</span>
+          </button>
         </div>
-        <button
-          onClick={() => setShowPreviousSessions(!showPreviousSessions)}
-          className="flex items-center space-x-2 text-sm text-blue-600 hover:text-blue-800 font-medium"
-        >
-          {showPreviousSessions ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-          <span>{showPreviousSessions ? 'Hide Previous' : 'Show Previous'}</span>
-        </button>
-      </div>
+      ) : (
+        <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+          <button
+            onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
+            className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <h2 className="text-lg font-semibold text-gray-800">
+            {format(currentMonth, 'MMMM yyyy')}
+          </h2>
+          <button
+            onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
+            className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
+      )}
 
       {/* Filters */}
       {showFilterDropdown && (
@@ -144,22 +176,30 @@ const Sessions: React.FC = () => {
         </div>
       )}
 
-      {/* Sessions List */}
-      <div className="space-y-4">
-        {filteredSessions.map(session => (
-          <SessionCard 
-            key={session.id} 
-            session={session} 
-            setSessions={setSessions}
-            onDelete={() => setShowDeleteModal(session.id)}
-            onEdit={() => setShowEditModal(session)}
-            onStatusUpdate={() => setShowUpdateStatusModal(session)}
-            onSignUp={() => setShowSignUpModal(session)}
-          />
-        ))}
-      </div>
+      {/* Content */}
+      {viewMode === 'list' ? (
+        <div className="space-y-4">
+          {filteredSessions.map(session => (
+            <SessionCard 
+              key={session.id} 
+              session={session} 
+              setSessions={setSessions}
+              onDelete={() => setShowDeleteModal(session.id)}
+              onEdit={() => setShowEditModal(session)}
+              onStatusUpdate={() => setShowUpdateStatusModal(session)}
+              onSignUp={() => setShowSignUpModal(session)}
+            />
+          ))}
+        </div>
+      ) : (
+        <CalendarView 
+          sessions={filteredSessions}
+          currentMonth={currentMonth}
+          onSessionClick={(session) => setShowEditModal(session)}
+        />
+      )}
 
-      {filteredSessions.length === 0 && (
+      {filteredSessions.length === 0 && viewMode === 'list' && (
         <div className="text-center py-12 bg-white rounded-xl shadow-lg">
           <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-800 mb-2">No sessions found</h3>
@@ -230,6 +270,93 @@ const Sessions: React.FC = () => {
         />
       )}
 
+    </div>
+  );
+};
+
+interface CalendarViewProps {
+  sessions: Session[];
+  currentMonth: Date;
+  onSessionClick: (session: Session) => void;
+}
+
+const CalendarView: React.FC<CalendarViewProps> = ({ sessions, currentMonth, onSessionClick }) => {
+  const monthStart = startOfMonth(currentMonth);
+  const monthEnd = endOfMonth(currentMonth);
+  const calendarDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
+
+  const getSessionsForDay = (day: Date) => {
+    return sessions.filter(session => 
+      isSameDay(new Date(session.date), day)
+    );
+  };
+
+  const statusColors = {
+    Planning: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    Confirmed: 'bg-green-100 text-green-800 border-green-200',
+    Completed: 'bg-blue-100 text-blue-800 border-blue-200',
+    Cancelled: 'bg-red-100 text-red-800 border-red-200'
+  };
+
+  return (
+    <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+      {/* Calendar Header */}
+      <div className="grid grid-cols-7 bg-gray-50">
+        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+          <div key={day} className="p-3 text-center text-sm font-medium text-gray-600 border-b border-gray-200">
+            {day}
+          </div>
+        ))}
+      </div>
+
+      {/* Calendar Grid */}
+      <div className="grid grid-cols-7">
+        {calendarDays.map(day => {
+          const daySessions = getSessionsForDay(day);
+          const isCurrentMonth = isSameMonth(day, currentMonth);
+          const isToday = isSameDay(day, new Date());
+
+          return (
+            <div 
+              key={day.toISOString()} 
+              className={`min-h-[100px] p-2 border-b border-r border-gray-200 ${
+                !isCurrentMonth ? 'bg-gray-50' : 'bg-white'
+              } ${isToday ? 'bg-blue-50' : ''}`}
+            >
+              <div className={`text-sm font-medium mb-2 ${
+                !isCurrentMonth ? 'text-gray-400' : isToday ? 'text-blue-600' : 'text-gray-800'
+              }`}>
+                {format(day, 'd')}
+              </div>
+              
+              <div className="space-y-1">
+                {daySessions.map(session => {
+                  const needsLeaders = !session.leaderNames || session.leaderNames.length === 0;
+                  
+                  return (
+                    <div
+                      key={session.id}
+                      onClick={() => onSessionClick(session)}
+                      className={`p-1 rounded text-xs cursor-pointer border ${
+                        statusColors[session.status]
+                      } ${needsLeaders ? 'ring-2 ring-orange-300' : ''} hover:opacity-80 transition-opacity`}
+                    >
+                      <div className="font-medium truncate">{session.activity}</div>
+                      <div className="text-xs opacity-75">{session.groupType}</div>
+                      {session.time !== 'TBD' && (
+                        <div className="text-xs opacity-75">{session.time}</div>
+                      )}
+                      {needsLeaders && (
+                        <div className="text-xs text-orange-600 font-medium">Need Leaders</div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };
