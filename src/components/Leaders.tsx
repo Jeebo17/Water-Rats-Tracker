@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   UserCheck, 
   Plus, 
@@ -6,10 +6,32 @@ import {
   Mail,
   Calendar
 } from 'lucide-react';
-import { Leader } from '../types';
+import { Leader, Session } from '../types';
 import { format } from 'date-fns';
+import { getLeaders } from '../firebase/leaders';
+import { getSessions } from '../firebase/sessions';
 
 const Leaders: React.FC = () => {
+  const [leaders, setLeaders] = useState<Leader[]>([]);
+  const [sessions, setSessions] = useState<Session[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [leadersData, sessionsData] = await Promise.all([
+          getLeaders(),
+          getSessions()
+        ]);
+        setLeaders(leadersData);
+        setSessions(sessionsData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -27,7 +49,7 @@ const Leaders: React.FC = () => {
       {/* Leaders Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {leaders.map(leader => (
-          <LeaderCard key={leader.name} leader={leader} />
+          <LeaderCard key={leader.name} leader={leader} sessions={sessions} />
         ))}
       </div>
     </div>
@@ -35,10 +57,11 @@ const Leaders: React.FC = () => {
 };
 
 interface LeaderCardProps {
-  leader: leader;
+  leader: Leader;
+  sessions: Session[];
 }
 
-const LeaderCard: React.FC<LeaderCardProps> = ({ leader }) => {
+const LeaderCard: React.FC<LeaderCardProps> = ({ leader, sessions }) => {
   const leaderSessions = sessions.filter(session => 
     session.leaderNames.includes(leader.name) && 
     new Date(session.date) >= new Date()
