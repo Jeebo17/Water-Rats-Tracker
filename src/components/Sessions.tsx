@@ -90,7 +90,13 @@ const Sessions: React.FC = () => {
 
         <button 
           className="w-12 h-12 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center"
-          onClick={() => setViewMode(viewMode === 'list' ? 'calendar' : 'list')}
+          onClick={() => {
+            setViewMode(viewMode === 'list' ? 'calendar' : 'list');
+            setShowPreviousSessions(viewMode === 'calendar' ? false : true);
+            setSelectedSessionId(null);
+            setFilter('All');
+            setGroupFilter('All');
+          }}
         >
           {viewMode === 'list' ? <Calendar className="w-5 h-5" /> : <List className="w-5 h-5" />}
         </button>
@@ -110,12 +116,17 @@ const Sessions: React.FC = () => {
             <div className="text-sm text-gray-600">
               Showing <span className="font-medium">{filteredSessions.length}</span> sessions
             </div>
-            {selectedSessionId && (
+            {(selectedSessionId || filter !== 'All' || groupFilter !== 'All') && (
               <button
-                onClick={() => setSelectedSessionId(null)}
+                onClick={() => {
+                  setSelectedSessionId(null);
+                  setFilter('All');
+                  setGroupFilter('All');
+                  setShowPreviousSessions(false);
+                }}
                 className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full hover:bg-blue-200 transition-colors"
               >
-                Clear Filter
+                {filter !== 'All' && groupFilter !== 'All' ? 'Clear Filters' : 'Clear Filter'}
               </button>
             )}
           </div>
@@ -321,7 +332,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ sessions, currentMonth, onS
     <div className="bg-white rounded-xl shadow-lg overflow-hidden">
       {/* Calendar Header */}
       <div className="grid grid-cols-7 bg-gray-50">
-        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
           <div key={day} className="p-3 text-center text-sm font-medium text-gray-600 border-b border-gray-200">
             {day}
           </div>
@@ -329,20 +340,21 @@ const CalendarView: React.FC<CalendarViewProps> = ({ sessions, currentMonth, onS
       </div>
 
       {/* Calendar Grid */}
-      <div className="grid grid-cols-7">
+      <div className="grid grid-cols-7 border-t border-l">
         {calendarDays.map(day => {
           const daySessions = getSessionsForDay(day);
           const isCurrentMonth = isSameMonth(day, currentMonth);
           const isToday = isSameDay(day, new Date());
+          const numSpacers = day.getDay() === 0 ? 6 : day.getDay() - 1;
 
           return (
             <div 
               key={day.toISOString()} 
-              className={`min-h-[100px] p-2 border-b border-r border-gray-200 ${
+              className={`min-h-[100px] p-1 border-b border-r border-gray-200 ${
                 !isCurrentMonth ? 'bg-gray-50' : 'bg-white'
               } ${isToday ? 'bg-blue-50' : ''}`}
             >
-              <div className={`text-sm font-medium mb-2 ${
+              <div className={`text-sm font-medium mb-2 ml-1 ${
                 !isCurrentMonth ? 'text-gray-400' : isToday ? 'text-blue-600' : 'text-gray-800'
               }`}>
                 {format(day, 'd')}
@@ -362,12 +374,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({ sessions, currentMonth, onS
                     >
                       <div className="font-medium truncate">{session.activity}</div>
                       <div className="text-xs opacity-75">{session.groupType}</div>
-                      {session.time !== 'TBD' && (
-                        <div className="text-xs opacity-75">{session.time}</div>
-                      )}
-                      {needsLeaders && (
+                      {/* {needsLeaders && (
                         <div className="text-xs text-orange-600 font-medium">Need Leaders</div>
-                      )}
+                      )} */}
                     </div>
                   );
                 })}
