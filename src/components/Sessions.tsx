@@ -313,6 +313,11 @@ interface CalendarViewProps {
 const CalendarView: React.FC<CalendarViewProps> = ({ sessions, currentMonth, onSessionClick }) => {
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
+  
+  // Calculate the number of empty cells needed at the start
+  const startDayOfWeek = monthStart.getDay();
+  const spacersNeeded = startDayOfWeek === 0 ? 6 : startDayOfWeek - 1; // Convert Sunday (0) to 6, Monday (1) to 0, etc.
+  
   const calendarDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
   const getSessionsForDay = (day: Date) => {
@@ -341,11 +346,16 @@ const CalendarView: React.FC<CalendarViewProps> = ({ sessions, currentMonth, onS
 
       {/* Calendar Grid */}
       <div className="grid grid-cols-7 border-t border-l">
+        {/* Add spacer cells for days before the 1st of the month */}
+        {Array.from({ length: spacersNeeded }, (_, index) => (
+          <div key={`spacer-${index}`} className="min-h-[100px] p-1 border-b border-r border-gray-200 bg-gray-50">
+          </div>
+        ))}
+        
         {calendarDays.map(day => {
           const daySessions = getSessionsForDay(day);
           const isCurrentMonth = isSameMonth(day, currentMonth);
           const isToday = isSameDay(day, new Date());
-          const numSpacers = day.getDay() === 0 ? 6 : day.getDay() - 1;
 
           return (
             <div 
