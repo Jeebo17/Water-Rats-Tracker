@@ -3,7 +3,7 @@ import { NavLink, Outlet } from 'react-router-dom';
 import { 
   Home, 
   Calendar, 
-  MapPin, 
+  UserCheck,
   PoundSterling,
   Waves
 } from 'lucide-react';
@@ -25,8 +25,8 @@ const Layout: React.FC = () => {
             <div className="hidden md:flex space-x-2">
               <NavItem to="/" icon={<Home className="w-4 h-4" />} label="Dashboard" />
               <NavItem to="/sessions" icon={<Calendar className="w-4 h-4" />} label="Sessions" />
-              {/* <NavItem to="/leaders" icon={<UserCheck className="w-4 h-4" />} label="leaders" /> */}
-              <NavItem to="/destinations" icon={<MapPin className="w-4 h-4" />} label="Destinations" />
+              <NavItem to="/leaders" icon={<UserCheck className="w-4 h-4" />} label="Leaders" />
+              {/* <NavItem to="/destinations" icon={<MapPin className="w-4 h-4" />} label="Destinations" /> */}
               <NavItem to="/finances" icon={<PoundSterling className="w-4 h-4" />} label="Finances" />
             </div>
           </div>
@@ -36,8 +36,8 @@ const Layout: React.FC = () => {
             <div className="grid grid-cols-4 gap-2">
               <NavItem to="/" icon={<Home className="w-5 h-5" />} label="Dashboard" mobile />
               <NavItem to="/sessions" icon={<Calendar className="w-5 h-5" />} label="Sessions" mobile />
-              {/* <NavItem to="/leaders" icon={<UserCheck className="w-5 h-5" />} label="leaders" mobile /> */}
-              <NavItem to="/destinations" icon={<MapPin className="w-5 h-5" />} label="Destinations" mobile />
+              <NavItem to="/leaders" icon={<UserCheck className="w-5 h-5" />} label="Leaders" mobile />
+              {/* <NavItem to="/destinations" icon={<MapPin className="w-5 h-5" />} label="Destinations" mobile /> */}
               <NavItem to="/finances" icon={<PoundSterling className="w-5 h-5" />} label="Finances" mobile />
             </div>
           </div>
