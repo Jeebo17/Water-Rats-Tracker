@@ -77,7 +77,7 @@ const Sessions: React.FC = () => {
   };
 
   return (
-    <div className="space-y-4 pb-6">
+    <div className="pb-6">
       {/* Header */}
       <div className="flex items-center gap-3">
         <button 
@@ -160,7 +160,7 @@ const Sessions: React.FC = () => {
 
       {/* Filters */}
       {showFilterDropdown && (
-        <div className="bg-white p-4 rounded-xl shadow-lg">
+        <div className="bg-white p-4 rounded-xl shadow-lg mb-4">
           <div className="space-y-4">
             <div>
               <h3 className="text-sm font-medium text-gray-700 mb-2">Status</h3>
@@ -316,7 +316,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ sessions, currentMonth, onS
   
   // Calculate the number of empty cells needed at the start
   const startDayOfWeek = monthStart.getDay();
-  const spacersNeeded = startDayOfWeek === 0 ? 6 : startDayOfWeek - 1; // Convert Sunday (0) to 6, Monday (1) to 0, etc.
+  const spacersNeeded = startDayOfWeek === 0 ? 6 : startDayOfWeek - 1;
   
   const calendarDays = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
@@ -486,11 +486,22 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, onDelete, onEdit, on
 
         <div className="flex items-center text-gray-700">
           <Users className="w-4 h-4 mr-2 text-gray-400" />
-          <span className="text-sm">
-            {session.expectedAttendees}
-            {session.maxParticipants ? `/${session.maxParticipants}` : ''}
-            {' participants'}
-          </span>
+            {session.expectedAttendees === 0 || session.expectedAttendees === undefined ? (
+            <span className="text-gray-400 italic text-sm">
+              Number of attendees not set
+            </span>
+            ) : (
+            <span className="text-sm">
+              {session.expectedAttendees}
+              {session.maxParticipants ? `/${session.maxParticipants}` : ''}
+              {' participants'}
+            </span>
+            )}
+        </div>
+
+        <div className="flex items-center text-gray-700">
+          <p className="mr-2 w-4 text-sm text-gray-400">LIC</p>
+          <span className="text-sm">{session.leaderInCharge}</span>
         </div>
 
       </div>
@@ -673,6 +684,7 @@ const EditSessionModal: React.FC<{
             <label className="block text-sm font-medium text-gray-700 mb-1">Expected Attendees</label>
             <input
               type="number"
+              min={0}
               value={formData.expectedAttendees ?? ''}
               onChange={(e) =>
                 setFormData({
@@ -894,6 +906,7 @@ const AddSessionModal: React.FC<{
             <label className="block text-sm font-medium text-gray-700 mb-1">Expected Attendees</label>
             <input
               type="number"
+              min={0}
               value={formData.expectedAttendees ?? ''}
               onChange={(e) =>
                 setFormData({
@@ -1033,6 +1046,12 @@ const SignUpModal: React.FC<{
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            {/* instructions */}
+            <p className="text-sm text-gray-400 mb-2">
+              Add your name below to sign up as a leader. Separate multiple names using commas.
+            </p>
+          </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Leaders</label>

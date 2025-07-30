@@ -27,18 +27,18 @@ const Layout: React.FC = () => {
               <NavItem to="/sessions" icon={<Calendar className="w-4 h-4" />} label="Sessions" />
               <NavItem to="/leaders" icon={<UserCheck className="w-4 h-4" />} label="Leaders" />
               {/* <NavItem to="/destinations" icon={<MapPin className="w-4 h-4" />} label="Destinations" /> */}
-              <NavItem to="/finances" icon={<PoundSterling className="w-4 h-4" />} label="Finances" />
+              {/* <NavItem to="/finances" icon={<PoundSterling className="w-4 h-4" />} label="Finances" /> */}
             </div>
           </div>
           
           {/* Mobile Navigation */}
           <div className="md:hidden pb-4">
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               <NavItem to="/" icon={<Home className="w-5 h-5" />} label="Dashboard" mobile />
               <NavItem to="/sessions" icon={<Calendar className="w-5 h-5" />} label="Sessions" mobile />
               <NavItem to="/leaders" icon={<UserCheck className="w-5 h-5" />} label="Leaders" mobile />
               {/* <NavItem to="/destinations" icon={<MapPin className="w-5 h-5" />} label="Destinations" mobile /> */}
-              <NavItem to="/finances" icon={<PoundSterling className="w-5 h-5" />} label="Finances" mobile />
+              {/* <NavItem to="/finances" icon={<PoundSterling className="w-5 h-5" />} label="Finances" mobile /> */}
             </div>
           </div>
         </div>

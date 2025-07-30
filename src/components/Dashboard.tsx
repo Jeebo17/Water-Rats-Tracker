@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { getSessionsForWeek, getUpcomingSessions } from '../firebase/sessions';
 import { Session } from '../types';
+import { isSameDay } from 'date-fns';
 
 
 const Dashboard: React.FC = () => {
@@ -105,15 +106,20 @@ const Dashboard: React.FC = () => {
               const daySession = thisWeekSessions.find(session => 
                 format(new Date(session.date), 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd')
               );
+
+              const isToday = isSameDay(day, new Date());
               
               return (
-                <div key={day.toISOString()} className="flex items-center justify-between p-2 rounded-lg bg-gray-50">
+                <div key={day.toISOString()} className={`flex items-center justify-between p-2 rounded-lg bg-gray-50 ${isToday ? 'border-blue-600 border-2' : ''}`}>
                   <div className="flex items-center space-x-3">
-                    <div className="text-center">
-                      <div className="text-xs font-medium text-gray-600">
+                    {/* {isToday && (
+                      <div className="w-1 h-1 bg-blue-600 rounded-full"></div>
+                    )} */}
+                    <div className={`text-center ${isToday ? 'text-blue-600' : 'text-gray-600'}`}>
+                      <div className="text-xs font-medium">
                         {format(day, 'EEE')}
                       </div>
-                      <div className="text-sm font-bold text-gray-800">
+                      <div className="text-sm font-bold">
                         {format(day, 'd')}
                       </div>
                     </div>
@@ -127,14 +133,20 @@ const Dashboard: React.FC = () => {
                             </span>
                           </div>
                           <div className="flex items-center space-x-2">
-                          <span className="flex items-center">
-                            <Clock className="w-3 h-3 mr-1" />
-                            {daySession.time}
-                          </span>
-                          <span className="flex items-center">
-                            <MapPin className="w-3 h-3 mr-1" />
-                            {daySession.location}
-                          </span>
+                            <span className="flex items-center">
+                              <Clock className="w-3 h-3 mr-1" />
+                              {daySession.time}
+                            </span>
+                            <span className="flex items-center">
+                              <MapPin className="w-3 h-3 mr-1" />
+                              {daySession.location}
+                            </span>
+                            {(daySession && daySession.expectedAttendees !== 0) && (
+                              <span className="flex items-center">
+                                <UserCheck className="w-3 h-3 mr-1" />
+                                {daySession.expectedAttendees}
+                              </span>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -142,14 +154,6 @@ const Dashboard: React.FC = () => {
                       <div className="text-gray-400 italic text-sm">No session</div>
                     )}
                   </div>
-                  {daySession && (
-                    <div className="text-right">
-                      <div className="text-xs font-medium text-gray-800">
-                        {daySession.expectedAttendees}/{daySession.maxParticipants}
-                      </div>
-                      <div className="text-xs text-gray-500">people</div>
-                    </div>
-                  )}
                 </div>
               );
             })}
@@ -203,10 +207,15 @@ const Dashboard: React.FC = () => {
                         : 'No leaders assigned'
                         }
                     </div>
-                    {session.expectedAttendees && (
+                    {(session.expectedAttendees && session.expectedAttendees !== 0) ? (
                       <div className="flex items-center">
-                        <UserCheck className="w-3 h-3 mr-2" />
-                        {session.expectedAttendees}/{session.maxParticipants} expected
+                      <UserCheck className="w-3 h-3 mr-2" />
+                      {session.expectedAttendees} expected
+                      </div>
+                    ) : (
+                      <div className="flex items-center text-gray-400 italic">
+                      <UserCheck className="w-3 h-3 mr-2" />
+                        Number of attendees not set
                       </div>
                     )}
                   </div>
