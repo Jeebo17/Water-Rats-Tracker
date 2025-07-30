@@ -28,7 +28,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, error, loading }) => {
             </div>
           </div>
           <h1 className="text-2xl font-bold text-gray-800 mb-2">Water Rats</h1>
-          <p className="text-gray-600">Session Management System</p>
+          <p className="text-gray-600">Session Management & Tracker System</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -81,7 +81,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, error, loading }) => {
 
         <div className="mt-6 text-center">
           <p className="text-xs text-gray-500">
-            Contact your administrator if you need access
+            Contact Nathan if you need access
           </p>
         </div>
       </div>

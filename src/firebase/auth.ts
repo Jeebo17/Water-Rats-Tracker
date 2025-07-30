@@ -15,21 +15,18 @@ export const verifyPassword = async (password: string): Promise<boolean> => {
       return data.password === password;
     }
     
-    // If document doesn't exist, deny access
     return false;
   } catch (error) {
     console.error('Error verifying password:', error);
-    // Deny access if Firebase fails
+
     return false;
   }
 };
 
-// Store password in localStorage for session persistence
 export const storeAuthSession = (password: string): void => {
   localStorage.setItem('waterRatsAuth', password);
 };
 
-// Check if user has valid session
 export const checkAuthSession = async (): Promise<boolean> => {
   const storedPassword = localStorage.getItem('waterRatsAuth');
   if (!storedPassword) return false;
@@ -37,7 +34,6 @@ export const checkAuthSession = async (): Promise<boolean> => {
   return await verifyPassword(storedPassword);
 };
 
-// Clear auth session
 export const clearAuthSession = (): void => {
   localStorage.removeItem('waterRatsAuth');
 };
