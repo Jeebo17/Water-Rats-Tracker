@@ -15,12 +15,12 @@ export const verifyPassword = async (password: string): Promise<boolean> => {
       return data.password === password;
     }
     
-    // If document doesn't exist, default password is "Test"
-    return password === 'Test';
+    // If document doesn't exist, deny access
+    return false;
   } catch (error) {
     console.error('Error verifying password:', error);
-    // Fallback to default password if Firebase fails
-    return password === 'Test';
+    // Deny access if Firebase fails
+    return false;
   }
 };
 
