@@ -7,6 +7,7 @@ import {
   PoundSterling,
   Waves
 } from 'lucide-react';
+import Logo from '../assets/waterratsfull.png'
 
 const Layout: React.FC = () => {
   return (
@@ -15,7 +16,7 @@ const Layout: React.FC = () => {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-3">
-              <Waves className="w-8 h-8" />
+              <img src={Logo} alt="Water Rats Logo" className="w-10 h-10" />
               <div>
                 <h1 className="text-xl font-bold">Water Rats</h1>
                 <p className="text-blue-100 text-sm">Session Tracker</p>
