@@ -1,9 +1,13 @@
 import { Timestamp } from 'firebase/firestore';
 
 export interface Leader {
+  id: string;
   name: string;
   email: string;
   phone: string;
+  personalQualifications: string[];
+  scoutingQualifications: string[];
+  youngLeader: boolean;
 }
 
 export interface Location {

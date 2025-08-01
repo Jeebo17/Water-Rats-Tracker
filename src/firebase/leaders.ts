@@ -19,11 +19,16 @@ export const getLeaders = async (): Promise<Leader[]> => {
     const q = query(collection(db, LEADERS_COLLECTION), orderBy('name', 'asc'));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => {
-      const data = doc.data() as Omit<Leader, 'id'>;
+      const data = doc.data();
       return {
         id: doc.id,
-        ...data
-      };
+        name: data.name || '',
+        email: data.email || '',
+        phone: data.phone || '',
+        personalQualifications: data.personalQualifications || [],
+        scoutingQualifications: data.scoutingQualifications || [],
+        youngLeader: data.youngLeader || false
+      } as Leader;
     });
   } catch (error) {
     console.error('Error getting leaders:', error);
@@ -34,7 +39,14 @@ export const getLeaders = async (): Promise<Leader[]> => {
 // Add new leader
 export const addLeader = async (leader: Omit<Leader, 'id'>): Promise<string> => {
   try {
-    const docRef = await addDoc(collection(db, LEADERS_COLLECTION), leader);
+    const docRef = await addDoc(collection(db, LEADERS_COLLECTION), {
+      name: leader.name,
+      email: leader.email,
+      phone: leader.phone,
+      personalQualifications: leader.personalQualifications,
+      scoutingQualifications: leader.scoutingQualifications,
+      youngLeader: leader.youngLeader
+    });
     return docRef.id;
   } catch (error) {
     console.error('Error adding leader:', error);
@@ -46,7 +58,15 @@ export const addLeader = async (leader: Omit<Leader, 'id'>): Promise<string> => 
 export const updateLeader = async (leaderId: string, updates: Partial<Leader>): Promise<void> => {
   try {
     const leaderRef = doc(db, LEADERS_COLLECTION, leaderId);
-    await updateDoc(leaderRef, updates);
+    const updateData: any = {};
+    if (updates.name !== undefined) updateData.name = updates.name;
+    if (updates.email !== undefined) updateData.email = updates.email;
+    if (updates.phone !== undefined) updateData.phone = updates.phone;
+    if (updates.personalQualifications !== undefined) updateData.personalQualifications = updates.personalQualifications;
+    if (updates.scoutingQualifications !== undefined) updateData.scoutingQualifications = updates.scoutingQualifications;
+    if (updates.youngLeader !== undefined) updateData.youngLeader = updates.youngLeader;
+    
+    await updateDoc(leaderRef, updateData);
   } catch (error) {
     console.error('Error updating leader:', error);
     throw error;
@@ -59,6 +79,35 @@ export const deleteLeader = async (leaderId: string): Promise<void> => {
     await deleteDoc(doc(db, LEADERS_COLLECTION, leaderId));
   } catch (error) {
     console.error('Error deleting leader:', error);
+    throw error;
+  }
+};
+
+// Temporary function to populate database with initial leaders
+export const populateInitialLeaders = async (): Promise<void> => {
+  const initialLeaders = [
+    { name: 'Tomi', email: '', phone: '', personalQualifications: [], scoutingQualifications: [], youngLeader: false },
+    { name: 'Rich', email: '', phone: '', personalQualifications: [], scoutingQualifications: [], youngLeader: false },
+    { name: 'Ryan', email: '', phone: '', personalQualifications: [], scoutingQualifications: [], youngLeader: false },
+    { name: 'Porson', email: '', phone: '', personalQualifications: [], scoutingQualifications: [], youngLeader: false },
+    { name: 'Carys', email: '', phone: '', personalQualifications: [], scoutingQualifications: [], youngLeader: false },
+    { name: 'Izzy', email: '', phone: '', personalQualifications: [], scoutingQualifications: [], youngLeader: false },
+    { name: 'Glen', email: '', phone: '', personalQualifications: [], scoutingQualifications: [], youngLeader: false },
+    { name: 'Eliah', email: '', phone: '', personalQualifications: [], scoutingQualifications: [], youngLeader: false },
+    { name: 'Nathan', email: '', phone: '', personalQualifications: [], scoutingQualifications: [], youngLeader: false },
+    { name: 'Damon', email: '', phone: '', personalQualifications: [], scoutingQualifications: [], youngLeader: false },
+    { name: 'Ewan', email: '', phone: '', personalQualifications: [], scoutingQualifications: [], youngLeader: true },
+    { name: 'Alfie', email: '', phone: '', personalQualifications: [], scoutingQualifications: [], youngLeader: true },
+    { name: 'Finley', email: '', phone: '', personalQualifications: [], scoutingQualifications: [], youngLeader: true }
+  ];
+
+  try {
+    for (const leader of initialLeaders) {
+      await addLeader(leader);
+    }
+    console.log('Successfully populated initial leaders');
+  } catch (error) {
+    console.error('Error populating initial leaders:', error);
     throw error;
   }
 };
