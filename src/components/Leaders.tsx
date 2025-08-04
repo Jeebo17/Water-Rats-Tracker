@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { Leader, Session } from '../types';
 import { format } from 'date-fns';
-import { getLeaders, populateInitialLeaders } from '../firebase/leaders';
+import { getLeaders } from '../firebase/leaders';
 import { getSessions } from '../firebase/sessions';
 
 const Leaders: React.FC = () => {
@@ -38,18 +38,6 @@ const Leaders: React.FC = () => {
     fetchData();
   }, []);
 
-  const handlePopulateLeaders = async () => {
-    try {
-      await populateInitialLeaders();
-      // Refresh the leaders list
-      const updatedLeaders = await getLeaders();
-      setLeaders(updatedLeaders);
-      alert('Leaders populated successfully!');
-    } catch (error) {
-      console.error('Error populating leaders:', error);
-      alert('Error populating leaders. Check console for details.');
-    }
-  };
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -57,19 +45,6 @@ const Leaders: React.FC = () => {
         <div>
           <h1 className="text-3xl font-bold text-gray-800">Leaders</h1>
           <p className="text-gray-600">View all leaders and their upcoming sessions</p>
-        </div>
-        <div className="mt-4 sm:mt-0 flex space-x-2">
-          <button 
-            onClick={handlePopulateLeaders}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2 text-sm font-medium"
-          >
-            <Users className="w-4 h-4" />
-            <span>Populate Leaders</span>
-          </button>
-          <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2 text-lg font-medium">
-            <Plus className="w-5 h-5" />
-            <span>Add leader</span>
-          </button>
         </div>
       </div>
 
@@ -79,26 +54,10 @@ const Leaders: React.FC = () => {
           <p className="text-gray-600">Loading leaders...</p>
         </div>
       ) : (
-      {/* Leaders Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {leaders.map(leader => (
-          <LeaderCard key={leader.id} leader={leader} sessions={sessions} />
-        ))}
-      </div>
-      )}
-
-      {!loading && leaders.length === 0 && (
-        <div className="text-center py-12 bg-white rounded-xl shadow-lg">
-          <UserCheck className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-800 mb-2">No leaders found</h3>
-          <p className="text-gray-600 mb-4">Get started by populating the database with initial leaders.</p>
-          <button 
-            onClick={handlePopulateLeaders}
-            className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2 mx-auto"
-          >
-            <Users className="w-5 h-5" />
-            <span>Populate Leaders</span>
-          </button>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {leaders.map(leader => (
+            <LeaderCard key={leader.id} leader={leader} sessions={sessions} />
+          ))}
         </div>
       )}
     </div>

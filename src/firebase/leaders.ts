@@ -82,32 +82,3 @@ export const deleteLeader = async (leaderId: string): Promise<void> => {
     throw error;
   }
 };
-
-// Temporary function to populate database with initial leaders
-export const populateInitialLeaders = async (): Promise<void> => {
-  const initialLeaders = [
-    { name: 'Tomi', email: '', phone: '', personalQualifications: [], scoutingQualifications: [], youngLeader: false },
-    { name: 'Rich', email: '', phone: '', personalQualifications: [], scoutingQualifications: [], youngLeader: false },
-    { name: 'Ryan', email: '', phone: '', personalQualifications: [], scoutingQualifications: [], youngLeader: false },
-    { name: 'Porson', email: '', phone: '', personalQualifications: [], scoutingQualifications: [], youngLeader: false },
-    { name: 'Carys', email: '', phone: '', personalQualifications: [], scoutingQualifications: [], youngLeader: false },
-    { name: 'Izzy', email: '', phone: '', personalQualifications: [], scoutingQualifications: [], youngLeader: false },
-    { name: 'Glen', email: '', phone: '', personalQualifications: [], scoutingQualifications: [], youngLeader: false },
-    { name: 'Eliah', email: '', phone: '', personalQualifications: [], scoutingQualifications: [], youngLeader: false },
-    { name: 'Nathan', email: '', phone: '', personalQualifications: [], scoutingQualifications: [], youngLeader: false },
-    { name: 'Damon', email: '', phone: '', personalQualifications: [], scoutingQualifications: [], youngLeader: false },
-    { name: 'Ewan', email: '', phone: '', personalQualifications: [], scoutingQualifications: [], youngLeader: true },
-    { name: 'Alfie', email: '', phone: '', personalQualifications: [], scoutingQualifications: [], youngLeader: true },
-    { name: 'Finley', email: '', phone: '', personalQualifications: [], scoutingQualifications: [], youngLeader: true }
-  ];
-
-  try {
-    for (const leader of initialLeaders) {
-      await addLeader(leader);
-    }
-    console.log('Successfully populated initial leaders');
-  } catch (error) {
-    console.error('Error populating initial leaders:', error);
-    throw error;
-  }
-};
