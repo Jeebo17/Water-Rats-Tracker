@@ -27,7 +27,7 @@ const Dashboard: React.FC = () => {
 
   const totalAttendees = thisWeekSessions.reduce((sum, session) => sum + (session.expectedAttendees ?? 0), 0);
   const sessionsNeedingLeaders = thisWeekSessions.filter(session => 
-    !session.leaderNames || session.leaderNames.length === 0
+    !session.leaderNames || session.leaderNames.length < 3
   ).length;
   const confirmedSessions = thisWeekSessions.filter(session => session.status === 'Confirmed').length;
 
