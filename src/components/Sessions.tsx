@@ -372,7 +372,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ sessions, currentMonth, onS
               
               <div className="space-y-1">
                 {daySessions.map(session => {
-                  const needsLeaders = !session.leaderNames || session.leaderNames.length === 0;
+                  const needsLeaders = !session.leaderNames || session.leaderNames.length < 3;
                   
                   return (
                     <div
@@ -428,7 +428,7 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, onDelete, onEdit, on
   };
 
   const StatusIcon = session.status ? statusConfig[session.status]?.icon : Clock;
-  const needsLeaders = !session.leaderNames || session.leaderNames.length === 0;
+  const needsLeaders = !session.leaderNames || session.leaderNames.length < 3;
 
   return (
     <div className={`bg-white p-4 rounded-xl shadow-lg ${

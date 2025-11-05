@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { 
   UserCheck, 
-  Plus, 
   Phone, 
   Mail,
   Calendar,
   Award,
-  Users,
   Star
 } from 'lucide-react';
 import { Leader, Session } from '../types';
