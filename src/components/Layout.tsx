@@ -4,10 +4,10 @@ import {
   Home, 
   Calendar, 
   UserCheck,
-  PoundSterling,
-  Waves
+  LogOut
 } from 'lucide-react';
 import Logo from '../assets/waterratsfull.png'
+import { logout } from '../firebase/auth';
 
 const Layout: React.FC = () => {
   return (
@@ -27,6 +27,9 @@ const Layout: React.FC = () => {
               <NavItem to="/" icon={<Home className="w-4 h-4" />} label="Dashboard" />
               <NavItem to="/sessions" icon={<Calendar className="w-4 h-4" />} label="Sessions" />
               <NavItem to="/leaders" icon={<UserCheck className="w-4 h-4" />} label="Leaders" />
+              <div onClick={logout} className="cursor-pointer flex items-center space-x-2 px-4 py-2 rounded-lg text-sm bg-red-500 hover:bg-red-600 transition-colors">
+                <LogOut className="w-4 h-4" />
+              </div>
               {/* <NavItem to="/destinations" icon={<MapPin className="w-4 h-4" />} label="Destinations" /> */}
               {/* <NavItem to="/finances" icon={<PoundSterling className="w-4 h-4" />} label="Finances" /> */}
             </div>
@@ -38,6 +41,9 @@ const Layout: React.FC = () => {
               <NavItem to="/" icon={<Home className="w-5 h-5" />} label="Dashboard" mobile />
               <NavItem to="/sessions" icon={<Calendar className="w-5 h-5" />} label="Sessions" mobile />
               <NavItem to="/leaders" icon={<UserCheck className="w-5 h-5" />} label="Leaders" mobile />
+              <div onClick={logout} className="cursor-pointer flex items-center space-x-2 px-4 py-2 rounded-lg text-sm bg-red-500 hover:bg-red-600 transition-colors">
+                <LogOut className="w-4 h-4" />
+              </div>
               {/* <NavItem to="/destinations" icon={<MapPin className="w-5 h-5" />} label="Destinations" mobile /> */}
               {/* <NavItem to="/finances" icon={<PoundSterling className="w-5 h-5" />} label="Finances" mobile /> */}
             </div>
