@@ -428,7 +428,7 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, onDelete, onEdit, on
   };
 
   const StatusIcon = session.status ? statusConfig[session.status]?.icon : Clock;
-  const needsLeaders = !session.leaderNames || session.leaderNames.length < 3;
+  const needsLeaders = !session.leaderNames || session.leaderNames.length < 4;
 
   return (
     <div className={`bg-white p-4 rounded-xl shadow-lg ${

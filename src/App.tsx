@@ -5,9 +5,9 @@ import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import Sessions from './components/Sessions';
 import Leaders from './components/Leaders';
-// import Destinations from './components/Destinations';
 import Finances from './components/Finances';
-import { verifyPassword, storeAuthSession, checkAuthSession } from './firebase/auth';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { login } from './firebase/auth';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -16,13 +16,14 @@ function App() {
   const [loginLoading, setLoginLoading] = useState(false);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const isValid = await checkAuthSession();
-      setIsAuthenticated(isValid);
-      setAuthLoading(false);
-    };
+    const auth = getAuth();
 
-    checkAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setIsAuthenticated(!!user);
+      setAuthLoading(false);
+    });
+
+    return unsubscribe;
   }, []);
 
   const handleLogin = async (password: string) => {
@@ -30,15 +31,10 @@ function App() {
     setLoginError('');
 
     try {
-      const isValid = await verifyPassword(password);
-      if (isValid) {
-        storeAuthSession(password);
-        setIsAuthenticated(true);
-      } else {
-        setLoginError('Incorrect password. Please try again.');
-      }
-    } catch (error) {
-      setLoginError('Unable to verify password. Please try again.');
+      await login(password);
+    } catch (error: any) {
+      console.error('LOGIN ERROR:', error);
+      setLoginError(error.message || 'Login failed');
     } finally {
       setLoginLoading(false);
     }

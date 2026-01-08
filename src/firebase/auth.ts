@@ -1,39 +1,17 @@
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from './config';
+import { getAuth, signInWithCustomToken } from 'firebase/auth';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 
-const AUTH_COLLECTION = 'auth';
-const AUTH_DOC = 'password';
+const functions = getFunctions(undefined, 'us-central1');
 
-// Check if password is correct
-export const verifyPassword = async (password: string): Promise<boolean> => {
-  try {
-    const docRef = doc(db, AUTH_COLLECTION, AUTH_DOC);
-    const docSnap = await getDoc(docRef);
-    
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      return data.password === password;
-    }
-    
-    return false;
-  } catch (error) {
-    console.error('Error verifying password:', error);
+export async function login(password: string) {
+  console.log('Calling loginWithPassword function');
 
-    return false;
-  }
-};
+  const fn = httpsCallable(functions, 'loginWithPassword');
+  const res = await fn({ password });
 
-export const storeAuthSession = (password: string): void => {
-  localStorage.setItem('waterRatsAuth', password);
-};
+  console.log('Function response:', res.data);
 
-export const checkAuthSession = async (): Promise<boolean> => {
-  const storedPassword = localStorage.getItem('waterRatsAuth');
-  if (!storedPassword) return false;
-  
-  return await verifyPassword(storedPassword);
-};
+  const { token } = res.data as { token: string };
 
-export const clearAuthSession = (): void => {
-  localStorage.removeItem('waterRatsAuth');
-};
+  await signInWithCustomToken(getAuth(), token);
+}
