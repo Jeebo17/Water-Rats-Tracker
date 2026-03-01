@@ -2,9 +2,15 @@
     {
         "version": "0.3.5",
         "date": "2026-03-1",
+        "new": [
+            "Updated Readme with new screenshots, descriptions and information architecture diagram to reflect recent UI and feature changes."
+        ],
         "changed": [
             "Sanitised uploadedData.ts by removing sensitive data and personal information.",
             "Moved Firebase configuration keys to .env file to enhance security and prevent exposure of credentials."
+        ],
+        "fixed": [
+            "Fixed title of Leader Signup modal to correctly display 'Sign Up as Leader' instead of 'Edit Session'."
         ]
     },
     {
