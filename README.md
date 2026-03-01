@@ -79,10 +79,9 @@ Full CRUD with status tracking (Planning → Confirmed → Completed / Cancelled
 A clean, minimal login gate. Leaders enter a shared access password — authenticated via a Firebase Cloud Function that returns a custom token.
 
 
-<div align="center" style="display: flex; justify-content: center; align-items: center; gap: 20px;">
-  <img src="docs/screenshots/login.png" alt="Login Page" height="400" />
-  <img src="docs/screenshots/login-mobile.png" alt="Login Page (Mobile)" height="400" />
-</div>
+| Desktop View | Mobile View |
+| :---: | :---: |
+| <img src="docs/screenshots/login.png" width="auto" height="400" /> | <img src="docs/screenshots/login-mobile.png" width="auto" height="400" /> |
 
 ---
 
