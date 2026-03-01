@@ -1,0 +1,167 @@
+[
+    {
+        "version": "0.3.5",
+        "date": "2026-03-1",
+        "changed": [
+            "Sanitised uploadedData.ts by removing sensitive data and personal information.",
+            "Moved Firebase configuration keys to .env file to enhance security and prevent exposure of credentials."
+        ]
+    },
+    {
+        "version": "0.3.4",
+        "date": "2026-02-22",
+        "new": [
+            "Minimum number of leaders field added to sessions — set a required minimum (1+) or no minimum (0).",
+            "Add Session and Edit Session modals now include a Min. Leaders Required input with a 'No minimum' toggle button.",
+            "Leader needed indicators now dynamically reflect each session's configured minimum across cards, spreadsheet, calendar, and dashboard.",
+            "Migration utility added to backfill existing sessions with minNumberOfLeaders = 3.",
+            "Custom discard changes confirmation modal replaces browser confirm dialog."
+        ],
+        "changed": [
+            "Session type updated: minNumberOfLeaders is now a required number (0 = no minimum).",
+            "'Need Leaders' dashboard stat now uses per-session minimum instead of a hardcoded threshold.",
+            "Leader count badges on session cards now display current/minimum ratio.",
+            "Add Session and Edit Session modals now prompt with a styled modal before discarding unsaved changes.",
+            "Min. Leaders input styling improved - blue 'No minimum' button when active, grayed out input when no minimum is set."
+        ]
+    },
+    {
+        "version": "0.3.3",
+        "date": "2026-02-14",
+        "new": [
+            "Mobile bottom navigation bar added for improved mobile UX.",
+            "Click-to-expand notes functionality in session spreadsheet - entire row is now clickable.",
+            "Inline editing for session fields (Activity, Group, Location, Leader in Charge, Expected Attendees) without needing edit button."
+        ],
+        "changed": [
+            "Complete responsive design overhaul - all pages optimised for mobile and large screens.",
+            "Dashboard layout now displays 4 stat cards in a row on desktop, with This Week and Upcoming Sessions side-by-side.",
+            "Session calendar now scrolls horizontally on mobile with abbreviated day headers (M/T/W).",
+            "Session spreadsheet now has proper horizontal scrolling on smaller screens.",
+            "Leader page optimised for mobile with smaller avatars and truncated email handling.",
+            "Changelog page now uses responsive padding instead of fixed percentages.",
+            "Header reduced in height on mobile to save screen space.",
+            "Main footer now responsive with smaller text and proper mobile spacing."
+        ],
+        "fixed": [
+            "Modal overlay gap at top of screen resolved by moving modals outside space-y container.",
+            "Modal backdrop now properly closes modals when clicked.",
+            "Session spreadsheet column widths optimised - wider columns for longer content (Date, Activity, Location).",
+            "Dashboard week view now wraps session details properly on mobile.",
+            "Unused variable warnings cleaned up across components."
+        ]
+    },
+    {
+        "version": "0.3.2",
+        "date": "2026-01-19",
+        "new": [
+            "Copy session functionality added to session cards.",
+            "Visual feedback implemented for successful session copy actions."
+        ]
+    },
+    {
+        "version": "0.3.1",
+        "date": "2026-01-17",
+        "new": [
+            "Leader signup functionality added to sessions.",
+            "Improved session action controls in the session spreadsheet.",
+            "UUIDs introduced for more reliable session identification."
+        ],
+        "changed": [
+            "Session filtering logic refined for better accuracy and performance.",
+            "SessionCalendar and SessionSpreadsheet components updated to reflect new session model.",
+            "Minor UI adjustments across session-related components."
+        ],
+        "fixed": [
+            "Footer positioning and opacity adjusted for improved visibility.",
+            "Resolved edge cases when filtering sessions with incomplete date information."
+        ]
+    },
+    {
+        "version": "0.3.0",
+        "date": "2026-01-17",
+        "new": [
+            "Complete overhaul of session date and time handling.",
+            "Sessions now support explicit start times or \"Time TBD\" states.",
+            "Firebase session data model updated to support flexible date/time storage.",
+            "New session calendar and spreadsheet views introduced."
+        ],
+        "changed": [
+            "Session dates and times are now stored using Firebase Timestamps instead of inferred values.",
+            "Filtering logic rewritten to operate on structured date/time fields.",
+            "Session-related queries updated to reflect the new data model.",
+            "Session management UI restructured to support the new workflow."
+        ],
+        "fixed": [
+            "Inconsistent session ordering caused by mixed date formats.",
+            "Incorrect filtering when sessions had missing or placeholder times.",
+            "Edge cases where sessions failed to render due to invalid date values."
+        ],
+        "breaking": [
+            "Session date/time fields in Firebase were restructured.",
+            "Legacy session records require migration to the new format."
+        ]
+    },
+    {
+        "version": "0.2.2",
+        "date": "2026-01-10",
+        "new": [
+            "Loading states added when fetching sessions.",
+            "Additional session metadata displayed in cards and forms."
+        ],
+        "changed": [
+            "Layout component renamed to Header for clarity.",
+            "DynamicForm and SessionCard components enhanced for flexibility.",
+            "General codebase refactoring for readability and maintainability."
+        ],
+        "fixed": [
+            "Default values in session add/edit modals now initialise correctly.",
+            "Session time input now uses a dedicated time field instead of free text."
+        ]
+    },
+    {
+        "version": "0.2.1",
+        "date": "2026-01-08",
+        "new": [
+            "Public-facing sessions page introduced.",
+            "New session management modals added.",
+            "Firebase authentication utilities integrated."
+        ],
+        "changed": [
+            "Calendar view replaced with dedicated SessionCalendar component.",
+            "Session management UI split into calendar and spreadsheet views.",
+            "Logout styling updated for improved visibility."
+        ],
+        "fixed": [
+            "Calendar day alignment issues.",
+            "Session view toggle now correctly resets filters."
+        ]
+    },
+    {
+        "version": "0.2.0",
+        "date": "2025-07-28",
+        "new": [
+            "Initial session management system introduced.",
+            "Calendar-based session view added.",
+            "Leader assignment and session status tracking implemented."
+        ],
+        "changed": [
+            "Session data structures standardised.",
+            "Destination field renamed to location across the application."
+        ],
+        "fixed": [
+            "Dashboard and session rendering errors on mobile devices."
+        ]
+    },
+    {
+        "version": "0.1.0",
+        "date": "2025-07-25",
+        "new": [
+            "Initial project setup.",
+            "Basic authentication and dashboard scaffolding.",
+            "Early session and leader management features."
+        ],
+        "changed": [],
+        "fixed": []
+    }
+]

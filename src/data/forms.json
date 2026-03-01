@@ -1,0 +1,90 @@
+[
+    {
+        "id": "2026-volunteer-register-interest",
+        "title": "Register your interest to volunteer with Water Rats",
+        "onSubmitMessage": "Thank you for registering your interest to volunteer with Water Rats! We will be in touch soon.",
+        "fields": [
+        {
+            "name": "information",
+            "label": "Thank you for your interest in volunteering with Water Rats! Please fill out the form below to register your interest. We will review your submission and get back to you with more information about available volunteering opportunities.",
+            "type": "info"
+        },
+        {
+            "name": "firstName",
+            "label": "First Name",
+            "type": "text",
+            "placeholder": "John",
+            "required": true
+        },
+        {
+            "name": "lastName",
+            "label": "Last Name",
+            "type": "text",
+            "placeholder": "Smith",
+            "required": true
+        },
+        {
+            "name": "email",
+            "label": "Email",
+            "type": "email",
+            "placeholder": "you@example.com",
+            "required": true
+        },
+        {
+            "name": "scoutStatus",
+            "label": "Your current involvement with Scouts",
+            "type": "select",
+            "options": [
+                "Adult volunteer / leader",
+                "Young Leader (14-17)",
+                "Scout Network member (18-25)",
+                "Explorer Scout (14-18)",
+                "Parent / carer",
+                "External (not currently involved in Scouts)"
+            ],
+            "required": true
+        },
+        {
+            "name": "group",
+            "label": "Scout group or organisation",
+            "type": "text",
+            "placeholder": "1st Example Scout Group",
+            "required": true
+        },
+        {
+            "name": "experience",
+            "label": "Relevant qualifications or experience",
+            "type": "textarea",
+            "placeholder": "Describe your qualifications or experience...",
+            "required": false
+        },
+        {
+            "name": "additionalInfoOrQuestions",
+            "label": "Any additional information or questions?",
+            "type": "textarea",
+            "required": false
+        },
+        {
+            "name": "dataConsent",
+            "label": "We will use the personal information you provide to contact you about volunteering with Water Rats and to manage your enquiry. Your data will be kept securely and only for as long as necessary. You can view how we handle personal data in The Scout Association’s {Data Protection Policy} and {Data Retention Policy}, and you have rights including access, correction, and deletion.",
+            "type": "info",
+            "links": [
+                {
+                    "text": "Data Protection Policy",
+                    "url": "https://www.scouts.org.uk/about-us/policy/data-protection-policy/"
+                },
+                {
+                    "text": "Data Retention Policy",
+                    "url": "https://www.scouts.org.uk/about-us/policy/data-retention-policy/"
+                }
+            ]
+        },
+        {
+            "name": "dataConsentCheckbox",
+            "label": "I have read and agree to the use of my data as described above.",
+            "type": "checkbox",
+            "required": true
+        }
+        ]
+    }
+]
