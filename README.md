@@ -78,12 +78,10 @@ Full CRUD with status tracking (Planning → Confirmed → Completed / Cancelled
 
 A clean, minimal login gate. Leaders enter a shared access password — authenticated via a Firebase Cloud Function that returns a custom token.
 
-<!-- 🖼️ SCREENSHOT: Replace with a screenshot of the Login page -->
 
-<p align="center">
-   <img src="docs/screenshots/login.png" alt="Login Page" height="400" />
-   <img src="docs/screenshots/login-mobile.png" alt="Login Page (Mobile)" height="400" style="margin-left: 20px;" />
-</p>
+| Desktop View | Mobile View |
+| :---: | :---: |
+| <img src="docs/screenshots/login.png" width="auto" height="400" /> | <img src="docs/screenshots/login-mobile.png" width="auto" height="400" /> |
 
 ---
 
@@ -91,21 +89,18 @@ A clean, minimal login gate. Leaders enter a shared access password — authenti
 
 At-a-glance overview with four stat cards (sessions this week, sessions needing leaders, total attendees, confirmed count), a Mon–Sun weekly schedule with today highlighted, and the next 5 upcoming sessions with status badges.
 
-<p align="center">
-   <img src="docs/screenshots/dashboard.png" alt="Dashboard" height="400" />
-   <img src="docs/screenshots/dashboard-mobile.png" alt="Dashboard (Mobile)" height="400" style="margin-left: 20px;" />
-</p>
+| Desktop View | Mobile View |
+| :---: | :---: |
+| <img src="docs/screenshots/dashboard.png" alt="Dashboard Overview" height="400" /> | <img src="docs/screenshots/dashboard-mobile.png" alt="Dashboard Overview (Mobile)" height="400" /> |
 
----
 
 ### Sessions — List View
 
 Detailed session cards with activity name, group badge, clickable status badge, date/time, location, leader pills, and action buttons (copy, edit, delete). Sessions needing more leaders get an orange border and "NEEDED" badge.
 
-<p align="center">
-   <img src="docs/screenshots/sessions-list.png" alt="Sessions List View" height="400" />
-   <img src="docs/screenshots/sessions-list-mobile.png" alt="Sessions List View (Mobile)" height="400" style="margin-left: 20px;" />
-</p>
+| Desktop View | Mobile View |
+| :---: | :---: |
+| <img src="docs/screenshots/sessions-list.png" alt="Sessions List View" height="400" /> | <img src="docs/screenshots/sessions-list-mobile.png" alt="Sessions List View (Mobile)" height="400" /> |
 
 ---
 
@@ -113,10 +108,9 @@ Detailed session cards with activity name, group badge, clickable status badge, 
 
 A tabular view with inline editing — click any cell to edit activity, group, location, or attendees. Changes save on blur. Expandable notes rows and quick-access leader signup.
 
-<p align="center">
-   <img src="docs/screenshots/sessions-spreadsheet.png" alt="Sessions Spreadsheet View" height="400" />
-   <img src="docs/screenshots/sessions-spreadsheet-mobile.png" alt="Sessions Spreadsheet View (Mobile)" height="400" style="margin-left: 20px;" />
-</p>
+| Desktop View | Mobile View |
+| :---: | :---: |
+| <img src="docs/screenshots/sessions-spreadsheet.png" alt="Sessions Spreadsheet View" height="400" /> | <img src="docs/screenshots/sessions-spreadsheet-mobile.png" alt="Sessions Spreadsheet View (Mobile)" height="400" /> |
 
 ---
 
@@ -124,11 +118,9 @@ A tabular view with inline editing — click any cell to edit activity, group, l
 
 Monthly grid with colour-coded session chips: 🟡 Planning, 🟢 Confirmed, 🔵 Completed, 🔴 Cancelled. Sessions needing leaders get an orange ring. Click any chip to jump to that session's detail.
 
-
-<p align="center">
-   <img src="docs/screenshots/sessions-calendar.png" alt="Sessions Calendar View" height="400" />
-   <img src="docs/screenshots/sessions-calendar-mobile.png" alt="Sessions Calendar View (Mobile)" height="400" style="margin-left: 20px;" />
-</p>
+| Desktop View | Mobile View |
+| :---: | :---: |
+| <img src="docs/screenshots/sessions-calendar.png" alt="Sessions Calendar View" height="400" /> | <img src="docs/screenshots/sessions-calendar-mobile.png" alt="Sessions Calendar View (Mobile)" height="400" /> |
 
 ---
 
@@ -136,10 +128,9 @@ Monthly grid with colour-coded session chips: 🟡 Planning, 🟢 Confirmed, �
 
 Cards for each leader showing avatar (colour-coded initials), contact info, personal and scouting qualifications as pill badges, and their upcoming session assignments.
 
-<p align="center">
-   <img src="docs/screenshots/leaders.png" alt="Leaders Directory" height="400" />
-   <img src="docs/screenshots/leaders-mobile.png" alt="Leaders Directory (Mobile)" height="400" style="margin-left: 20px;" />
-</p>
+| Desktop View | Mobile View |
+| :---: | :---: |
+| <img src="docs/screenshots/leaders.png" alt="Leaders Directory" height="400" /> | <img src="docs/screenshots/leaders-mobile.png" alt="Leaders Directory (Mobile)" height="400" /> |
 
 ---
 
@@ -147,11 +138,9 @@ Cards for each leader showing avatar (colour-coded initials), contact info, pers
 
 A public-facing volunteer interest form powered by the dynamic form engine. No authentication required. Submissions are stored in Firestore.
 
-
-<p align="center">
-   <img src="docs/screenshots/public-form.png" alt="Public Registration Form" height="400" />
-   <img src="docs/screenshots/public-form-mobile.png" alt="Public Registration Form (Mobile)" height="400" style="margin-left: 20px;" />
-</p>
+| Desktop View | Mobile View |
+| :---: | :---: |
+| <img src="docs/screenshots/public-form.png" alt="Public Registration Form" height="400" /> | <img src="docs/screenshots/public-form-mobile.png" alt="Public Registration Form (Mobile)" height="400" /> |
 
 ---
 
@@ -159,11 +148,9 @@ A public-facing volunteer interest form powered by the dynamic form engine. No a
 
 Reusable modal system for adding, editing, and deleting sessions, signing up leaders, updating session status, and confirming discards. All modals feature overlay backdrop, click-outside-to-close, and dirty-checking to prevent accidental data loss.
 
-
-<p align="center">
-   <img src="docs/screenshots/add-session-modal.png" alt="Add Session Modal" height="400" />
-   <img src="docs/screenshots/sign-up-as-leader-modal-mobile.png" alt="Leader Signup Modal" height="400" style="margin-left: 20px;" />
-</p>
+| Add Session | Leader Signup |
+| :---: | :---: |
+| <img src="docs/screenshots/add-session-modal.png" alt="Add Session Modal" height="400" /> | <img src="docs/screenshots/sign-up-as-leader-modal-mobile.png" alt="Leader Signup Modal" height="400" /> |
 
 ---
 
