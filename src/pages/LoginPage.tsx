@@ -1,20 +1,25 @@
 import React, { useState } from 'react';
 import { Waves, Lock, Eye, EyeOff } from 'lucide-react';
+import { getStoredDisplayName } from '../util/auth';
 
 interface LoginProps {
-  onLogin: (password: string) => void;
+  onLogin: (password: string, displayName: string) => void;
   error?: string;
   loading?: boolean;
 }
 
 const Login: React.FC<LoginProps> = ({ onLogin, error, loading }) => {
   const [password, setPassword] = useState('');
+  const [displayName, setDisplayName] = useState(() => getStoredDisplayName());
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password.trim()) {
-      onLogin(password.trim());
+    const trimmedPassword = password.trim();
+    const trimmedDisplayName = displayName.trim();
+
+    if (trimmedPassword && trimmedDisplayName) {
+      onLogin(trimmedPassword, trimmedDisplayName);
     }
   };
 
@@ -32,6 +37,21 @@ const Login: React.FC<LoginProps> = ({ onLogin, error, loading }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Your Name
+            </label>
+            <input
+              type="text"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Enter your name"
+              required
+              disabled={loading}
+            />
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Access Password
@@ -72,7 +92,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, error, loading }) => {
 
           <button
             type="submit"
-            disabled={loading || !password.trim()}
+            disabled={loading || !password.trim() || !displayName.trim()}
             className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Checking...' : 'Access System'}

@@ -1,6 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { X, Save } from 'lucide-react';
 import { Session } from '../../types';
+import { getStoredDisplayName } from '../../util/auth';
+
+const getInitialLeaderInput = (session: Session) => {
+    const existingLeaders = session.leaderNames ?? [];
+    const storedDisplayName = getStoredDisplayName();
+
+    if (storedDisplayName && !existingLeaders.includes(storedDisplayName)) {
+        return [...existingLeaders, storedDisplayName].join(', ');
+    }
+
+    return existingLeaders.join(', ');
+};
 
 const ModalLeaderSignup: React.FC<{
     session: Session;
@@ -8,12 +20,12 @@ const ModalLeaderSignup: React.FC<{
     onCancel: () => void;
 }> = ({ session, onSave, onCancel }) => {
     const [formData, setFormData] = useState(session);
-    const [leaderInput, setLeaderInput] = useState(session.leaderNames?.join(', ') || '');
+    const [leaderInput, setLeaderInput] = useState(() => getInitialLeaderInput(session));
     const [hasBeenEdited, setHasBeenEdited] = useState(false);
 
     const [initialData] = useState({
         ...session,
-        leaderInput: session.leaderNames?.join(', ') || '',
+        leaderInput: getInitialLeaderInput(session),
     });
 
     useEffect(() => {

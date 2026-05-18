@@ -30,12 +30,12 @@ function App() {
     return unsubscribe;
   }, []);
 
-  const handleLogin = async (password: string) => {
+  const handleLogin = async (password: string, displayName: string) => {
     setLoginLoading(true);
     setLoginError('');
 
     try {
-      await login(password);
+      await login(password, displayName);
     } catch (error: any) {
       console.error('LOGIN ERROR:', error);
       setLoginError(error.message || 'Login failed');

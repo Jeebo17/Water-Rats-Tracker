@@ -4,8 +4,28 @@ import { auth, app } from './config';
 import { IS_DEV } from "./util";
 
 const functions = getFunctions(app, 'us-central1');
+const DISPLAY_NAME_STORAGE_KEY = 'waterRatsDisplayName';
 
-export async function login(password: string) {
+export function getStoredDisplayName() {
+  if (typeof window === 'undefined') return '';
+
+  return window.localStorage.getItem(DISPLAY_NAME_STORAGE_KEY) ?? '';
+}
+
+export function setStoredDisplayName(displayName: string) {
+  if (typeof window === 'undefined') return;
+
+  const trimmedDisplayName = displayName.trim();
+
+  if (trimmedDisplayName) {
+    window.localStorage.setItem(DISPLAY_NAME_STORAGE_KEY, trimmedDisplayName);
+    return;
+  }
+
+  window.localStorage.removeItem(DISPLAY_NAME_STORAGE_KEY);
+}
+
+export async function login(password: string, displayName: string) {
   if (IS_DEV) { console.log('login') };
 
   try {
@@ -18,6 +38,7 @@ export async function login(password: string) {
     if (!token) throw new Error('No token returned from function');
 
     await signInWithCustomToken(auth, token);
+    setStoredDisplayName(displayName);
     console.log('Login successful!');
   } catch (err: any) {
     console.error('LOGIN ERROR:', err);

@@ -7,7 +7,7 @@ import {
   LogOut
 } from 'lucide-react';
 import Logo from '../assets/WaterRatsBadge.png'
-import { logout } from '../util/auth';
+import { getStoredDisplayName, logout } from '../util/auth';
 
 interface HeaderProps {
   Public?: boolean;
@@ -15,6 +15,8 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ Public, children }) => {
+  const displayName = getStoredDisplayName();
+
   return (
     <div className="min-h-screen bg-slate-50">
       <nav className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg">
@@ -25,6 +27,11 @@ const Header: React.FC<HeaderProps> = ({ Public, children }) => {
               <div>
                 <h1 className="text-lg md:text-xl font-bold">Water Rats</h1>
                 {!Public && <p className="text-blue-100 text-xs md:text-sm hidden md:block">Session Tracker</p>}
+                {!Public && displayName && (
+                  <p className="text-blue-100 text-[11px] md:text-xs hidden md:block">
+                    Signed in as {displayName}
+                  </p>
+                )}
               </div>
             </div>
             
