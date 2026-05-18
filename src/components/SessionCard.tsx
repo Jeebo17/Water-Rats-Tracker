@@ -186,8 +186,12 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, onDelete, onEdit, on
 
             <div className="grid grid-cols-2 gap-2">
                 <button
-                    className={`w-full text-white py-2 rounded-lg transition-colors font-medium text-sm ${
-                        isSignedUp ? 'bg-green-600 cursor-default' : 'bg-blue-600 hover:bg-blue-700'
+                    className={`w-full py-2 rounded-lg transition-colors font-medium text-sm ${
+                        isSignedUp 
+                            ? 'bg-green-600 cursor-default text-white' 
+                            : isDeclined
+                                ? 'bg-white text-blue-700 border border-blue-300 hover:bg-blue-50'
+                                : 'bg-blue-600 hover:bg-blue-700 text-white'
                     }`}
                     onClick={onSignUp}
                     disabled={isSignedUp}
@@ -204,7 +208,7 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, onDelete, onEdit, on
                     disabled={isDeclined}
                 >
                     <UserX className="w-4 h-4" />
-                    <span>Declined</span>
+                    <span>{isDeclined ? 'Declined' : 'Decline'}</span>
                 </button>
             </div>
         </div>
