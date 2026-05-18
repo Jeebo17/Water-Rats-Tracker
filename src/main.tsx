@@ -16,7 +16,7 @@ createRoot(document.getElementById('root')!).render(
           className="text-right z-1000 text-gray-700 text-md opacity-60 cursor-pointer hover:opacity-100 transition-opacity underline select-none"
           onClick={() => window.location.href = '/changelog'}
         >
-          Version 0.3.5
+          Version 0.4.1
         </div>
       </div>
     </>
