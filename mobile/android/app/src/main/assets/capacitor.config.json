@@ -1,0 +1,9 @@
+{
+	"appId": "com.example.waterrats",
+	"appName": "Water Rats",
+	"webDir": "../dist",
+	"server": {
+		"url": "",
+		"cleartext": true
+	}
+}

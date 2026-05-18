@@ -201,10 +201,15 @@ const Dashboard: React.FC = () => {
                     </div>
                     <div className="flex items-center">
                       <User className="w-3 h-3 mr-2" />
-                        {session.leaderNames && session.leaderNames.length > 0 
-                        ? session.leaderNames.join(', ')
-                        : 'No leaders assigned'
-                        }
+                        {session.leaderNames && session.leaderNames.length > 0
+                        ? `Can: ${session.leaderNames.join(', ')}`
+                        : 'Can: none'}
+                    </div>
+                    <div className="flex items-center">
+                      <User className="w-3 h-3 mr-2" />
+                        {session.declinedLeaderNames && session.declinedLeaderNames.length > 0
+                        ? `Declined: ${session.declinedLeaderNames.join(', ')}`
+                        : 'Declined: none'}
                     </div>
                     {(session.expectedAttendees && session.expectedAttendees !== 0) ? (
                       <div className="flex items-center">

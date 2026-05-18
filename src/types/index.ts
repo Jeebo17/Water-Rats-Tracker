@@ -30,6 +30,7 @@ export interface Session {
   groupType: 'Squirrels' | 'Beavers' | 'Cubs' | 'Scouts' | 'Explorers' | 'Network' | 'External' | 'Mixed';
   location: string | "TBD";
   leaderNames?: string[];
+  declinedLeaderNames?: string[];
   leaderInCharge: string;
   minNumberOfLeaders: number;
   maxParticipants?: number | 0;
