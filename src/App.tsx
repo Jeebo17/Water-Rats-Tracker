@@ -7,8 +7,8 @@ import Sessions from './pages/SessionsPage';
 import Leaders from './pages/LeaderPage';
 import PublicPage from './pages/PublicPage';
 import ChangeLogPage from './pages/ChangeLogPage';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { login } from './util/auth';
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
+import { getStoredDisplayName, login } from './util/auth';
 import DynamicForm from './components/DynamicForm';
 import formsData  from './data/forms.json';
 const forms = formsData as any[];
@@ -23,19 +23,33 @@ function App() {
     const auth = getAuth();
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setIsAuthenticated(!!user);
+      const storedDisplayName = getStoredDisplayName().trim();
+
+      if (user && !storedDisplayName) {
+        signOut(auth).catch((error) => {
+          console.error('Error signing out session without display name:', error);
+        });
+        setIsAuthenticated(false);
+        setAuthLoading(false);
+        return;
+      }
+
+      setIsAuthenticated(!!user && !!storedDisplayName);
       setAuthLoading(false);
     });
 
     return unsubscribe;
   }, []);
 
-  const handleLogin = async (password: string) => {
+  const hasStoredDisplayName = !!getStoredDisplayName().trim();
+  const canAccessApp = isAuthenticated && hasStoredDisplayName;
+
+  const handleLogin = async (password: string, displayName: string) => {
     setLoginLoading(true);
     setLoginError('');
 
     try {
-      await login(password);
+      await login(password, displayName);
     } catch (error: any) {
       console.error('LOGIN ERROR:', error);
       setLoginError(error.message || 'Login failed');
@@ -73,11 +87,11 @@ function App() {
         {/* Login route */}
         <Route
           path="/login"
-          element={isAuthenticated ? <Navigate to="/" /> : <Login onLogin={handleLogin} error={loginError} loading={loginLoading} />}
+          element={canAccessApp ? <Navigate to="/" /> : <Login onLogin={handleLogin} error={loginError} loading={loginLoading} />}
         />
 
         {/* Authenticated routes */}
-        {isAuthenticated && (
+        {canAccessApp && (
           <Route path="/" element={<Header />}>
             <Route index element={<Dashboard />} />
             <Route path="sessions" element={<Sessions />} />
@@ -87,7 +101,7 @@ function App() {
         )}
 
         {/* Catch-all: redirect non-authenticated users to login */}
-        {!isAuthenticated && <Route path="*" element={<Navigate to="/login" />} />}
+        {!canAccessApp && <Route path="*" element={<Navigate to="/login" />} />}
       </Routes>
     </Router>
   );

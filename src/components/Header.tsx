@@ -7,7 +7,7 @@ import {
   LogOut
 } from 'lucide-react';
 import Logo from '../assets/WaterRatsBadge.png'
-import { logout } from '../util/auth';
+import { getStoredDisplayName, logout } from '../util/auth';
 
 interface HeaderProps {
   Public?: boolean;
@@ -15,6 +15,8 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ Public, children }) => {
+  const displayName = getStoredDisplayName();
+
   return (
     <div className="min-h-screen bg-slate-50">
       <nav className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg">
@@ -22,9 +24,16 @@ const Header: React.FC<HeaderProps> = ({ Public, children }) => {
           <div className="flex items-center justify-between h-14 md:h-16">
             <div className="flex items-center space-x-3">
               <img src={Logo} alt="Water Rats Logo" className="w-10 h-10 md:w-12 md:h-12" />
-              <div>
-                <h1 className="text-lg md:text-xl font-bold">Water Rats</h1>
-                {!Public && <p className="text-blue-100 text-xs md:text-sm hidden md:block">Session Tracker</p>}
+              <div className="flex items-center gap-2 md:gap-3 min-w-0">
+                <div className="min-w-0">
+                  <h1 className="text-lg md:text-xl font-bold leading-tight">Water Rats</h1>
+                  {!Public && <p className="text-blue-100 text-xs md:text-sm hidden md:block leading-tight">Session Tracker</p>}
+                </div>
+                {!Public && displayName && (
+                  <div className="hidden md:flex items-center rounded-full bg-white/15 px-3 py-1 text-[11px] font-medium text-blue-50 whitespace-nowrap">
+                    Signed in as {displayName}
+                  </div>
+                )}
               </div>
             </div>
             

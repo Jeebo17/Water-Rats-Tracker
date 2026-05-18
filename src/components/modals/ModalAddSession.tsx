@@ -75,6 +75,7 @@ const ModalAddSession: React.FC<{
             notes: formData.notes,
             leaderInCharge: formData.leaderInCharge,
             leaderNames: [],
+            declinedLeaderNames: [],
             minNumberOfLeaders: formData.hasMinLeaders ? (formData.minNumberOfLeaders || 3) : 0,
         };
 

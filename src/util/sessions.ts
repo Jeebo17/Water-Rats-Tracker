@@ -20,6 +20,8 @@ import { IS_DEV } from "./util";
 
 const SESSIONS_COLLECTION = 'sessions';
 
+const normalizeLeaderName = (leaderName: string) => leaderName.trim();
+
 // Get all sessions
 export const getSessions = async (): Promise<Session[]> => {
   if (IS_DEV) { console.log('getSessions'); }
@@ -143,12 +145,16 @@ export const deleteSession = async (sessionId: string): Promise<void> => {
 
 // Sign up leader for session  
 export const signUpLeader = async (sessionId: string, leaderName: string): Promise<void> => {
-  if (IS_DEV) { console.log('signUpLeader: ', sessionId, leaderName); }
+  const normalizedLeaderName = normalizeLeaderName(leaderName);
+  if (!normalizedLeaderName) return;
+
+  if (IS_DEV) { console.log('signUpLeader: ', sessionId, normalizedLeaderName); }
 
   try {
     const sessionRef = doc(db, SESSIONS_COLLECTION, sessionId);
     await updateDoc(sessionRef, {
-      leaderNames: arrayUnion(leaderName)
+      leaderNames: arrayUnion(normalizedLeaderName),
+      declinedLeaderNames: arrayRemove(normalizedLeaderName)
     });
   } catch (error) {
     console.error('Error signing up leader:', error);
@@ -158,15 +164,38 @@ export const signUpLeader = async (sessionId: string, leaderName: string): Promi
 
 // Remove leader from session  
 export const removeLeader = async (sessionId: string, leaderName: string): Promise<void> => {
-  if (IS_DEV) { console.log('removeLeader: ', sessionId, leaderName); }
+  const normalizedLeaderName = normalizeLeaderName(leaderName);
+  if (!normalizedLeaderName) return;
+
+  if (IS_DEV) { console.log('removeLeader: ', sessionId, normalizedLeaderName); }
 
   try {
     const sessionRef = doc(db, SESSIONS_COLLECTION, sessionId);
     await updateDoc(sessionRef, {
-      leaderNames: arrayRemove(leaderName)
+      leaderNames: arrayRemove(normalizedLeaderName),
+      declinedLeaderNames: arrayRemove(normalizedLeaderName)
     });
   } catch (error) {
     console.error('Error removing leader:', error);
+    throw error;
+  }
+};
+
+// Mark leader as declined for session
+export const declineLeader = async (sessionId: string, leaderName: string): Promise<void> => {
+  const normalizedLeaderName = normalizeLeaderName(leaderName);
+  if (!normalizedLeaderName) return;
+
+  if (IS_DEV) { console.log('declineLeader: ', sessionId, normalizedLeaderName); }
+
+  try {
+    const sessionRef = doc(db, SESSIONS_COLLECTION, sessionId);
+    await updateDoc(sessionRef, {
+      declinedLeaderNames: arrayUnion(normalizedLeaderName),
+      leaderNames: arrayRemove(normalizedLeaderName)
+    });
+  } catch (error) {
+    console.error('Error declining leader:', error);
     throw error;
   }
 };
