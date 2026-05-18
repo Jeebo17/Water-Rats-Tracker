@@ -5,6 +5,8 @@ import { Timestamp } from 'firebase/firestore';
 import { format } from 'date-fns';
 import ModalConfirmDiscard from './ModalConfirmDiscard';
 
+const normalizeName = (name: string) => name.trim();
+
 const ModalEditSession: React.FC<{
     session: Session;
     onSave: (session: Session) => void;
@@ -17,7 +19,9 @@ const ModalEditSession: React.FC<{
     hasMinLeaders: (session.minNumberOfLeaders ?? 0) > 0,
     });
 
-    const [leaderInput, setLeaderInput] = useState(session.leaderNames?.join(', ') ?? '');
+    const [attendingNames, setAttendingNames] = useState<string[]>(session.leaderNames ?? []);
+    const [declinedNames, setDeclinedNames] = useState<string[]>(session.declinedLeaderNames ?? []);
+    const [nameInput, setNameInput] = useState('');
     const [hasBeenEdited, setHasBeenEdited] = useState(false);
     const [showDiscardModal, setShowDiscardModal] = useState(false);
 
@@ -34,30 +38,46 @@ const ModalEditSession: React.FC<{
         date: session.startTime instanceof Timestamp ? format(session.startTime.toDate(), 'yyyy-MM-dd') : '',
         time: session.timeTBD ? '' : session.startTime instanceof Timestamp ? format(session.startTime.toDate(), 'HH:mm') : '',
         hasMinLeaders: (session.minNumberOfLeaders ?? 0) > 0,
-        leaderInput: session.leaderNames?.join(', ') ?? '',
+        attendingNames: session.leaderNames ?? [],
+        declinedNames: session.declinedLeaderNames ?? [],
     });
 
     useEffect(() => {
         const isEdited =
             JSON.stringify({
             ...formData,
-            leaderInput,
+            attendingNames,
+            declinedNames,
             }) !==
             JSON.stringify({
             ...initialData,
-            leaderInput: initialData.leaderInput,
+            attendingNames: initialData.attendingNames,
+            declinedNames: initialData.declinedNames,
             });
 
         setHasBeenEdited(isEdited);
-    }, [formData, leaderInput, initialData]);
+    }, [formData, attendingNames, declinedNames, initialData]);
+
+    const addNameToAttending = (rawName: string) => {
+        const name = normalizeName(rawName);
+        if (!name) return;
+
+        setAttendingNames(prev => (prev.includes(name) ? prev : [...prev, name]));
+        setDeclinedNames(prev => prev.filter(existing => existing !== name));
+        setNameInput('');
+    };
+
+    const addNameToDeclined = (rawName: string) => {
+        const name = normalizeName(rawName);
+        if (!name) return;
+
+        setDeclinedNames(prev => (prev.includes(name) ? prev : [...prev, name]));
+        setAttendingNames(prev => prev.filter(existing => existing !== name));
+        setNameInput('');
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-
-        const leaderNames = leaderInput
-            .split(',')
-            .map(name => name.trim())
-            .filter(name => name);
 
         const timeTBD = !formData.time?.trim();
 
@@ -84,7 +104,8 @@ const ModalEditSession: React.FC<{
             location: formData.location?.trim() || 'TBD',
             notes: formData.notes,
             leaderInCharge: formData.leaderInCharge,
-            leaderNames,
+            leaderNames: attendingNames,
+            declinedLeaderNames: declinedNames,
             expectedAttendees: formData.expectedAttendees ?? 0,
             status: formData.status,
             minNumberOfLeaders: formData.hasMinLeaders ? (formData.minNumberOfLeaders || 3) : 0,
@@ -239,13 +260,69 @@ const ModalEditSession: React.FC<{
 
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Leaders</label>
-                    <textarea
-                    value={leaderInput}
-                    onChange={(e) => setLeaderInput(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Enter leader names separated by commas, e.g. John, Jane"
-                    rows={2}
+                    <input
+                        type="text"
+                        value={nameInput}
+                        onChange={(e) => setNameInput(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="Type a name"
                     />
+                    <div className="flex gap-2 mt-2">
+                        <button
+                            type="button"
+                            onClick={() => addNameToAttending(nameInput)}
+                            className="flex-1 px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        >
+                            Add to Attending
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => addNameToDeclined(nameInput)}
+                            className="flex-1 px-3 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                        >
+                            Add to Declined
+                        </button>
+                    </div>
+
+                    <div className="mt-3">
+                        <p className="text-xs font-medium text-green-700 mb-1">Attending</p>
+                        {attendingNames.length > 0 ? (
+                            <div className="flex flex-wrap gap-2">
+                                {attendingNames.map(name => (
+                                    <button
+                                        key={name}
+                                        type="button"
+                                        onClick={() => setAttendingNames(prev => prev.filter(existing => existing !== name))}
+                                        className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs hover:bg-green-200 flex items-center gap-1"
+                                    >
+                                        {name} <X className="w-4 h-4 inline-block" />
+                                    </button>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-xs text-gray-500 italic">No one attending yet</p>
+                        )}
+                    </div>
+
+                    <div className="mt-2">
+                        <p className="text-xs font-medium text-red-700 mb-1">Declined</p>
+                        {declinedNames.length > 0 ? (
+                            <div className="flex flex-wrap gap-2">
+                                {declinedNames.map(name => (
+                                    <button
+                                        key={name}
+                                        type="button"
+                                        onClick={() => setDeclinedNames(prev => prev.filter(existing => existing !== name))}
+                                        className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs hover:bg-red-200 flex items-center gap-1"
+                                    >
+                                        {name} <X className="w-4 h-4 inline-block" />
+                                    </button>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-xs text-gray-500 italic">No declines yet</p>
+                        )}
+                    </div>
                 </div>
 
                 <div>

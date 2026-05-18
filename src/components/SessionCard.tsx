@@ -11,8 +11,10 @@ import {
     XCircle,
     Edit,
     Trash2,
-    Copy
+    Copy,
+    UserX
 } from 'lucide-react';
+import { getStoredDisplayName } from '../util/auth';
 
 interface SessionCardProps {
     session: Session;
@@ -21,10 +23,11 @@ interface SessionCardProps {
     onEdit: () => void;
     onStatusUpdate: () => void;
     onSignUp: () => void;
+    onDecline: () => void;
     onCopy: () => void;
 }
 
-const SessionCard: React.FC<SessionCardProps> = ({ session, onDelete, onEdit, onStatusUpdate, onSignUp, onCopy }) => {
+const SessionCard: React.FC<SessionCardProps> = ({ session, onDelete, onEdit, onStatusUpdate, onSignUp, onDecline, onCopy }) => {
     const statusConfig = {
         Planning: { color: 'bg-yellow-100 text-yellow-800', icon: Clock },
         Confirmed: { color: 'bg-green-100 text-green-800', icon: CheckCircle },
@@ -45,7 +48,12 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, onDelete, onEdit, on
 
     const StatusIcon = session.status ? statusConfig[session.status]?.icon : Clock;
     const minLeaders = session.minNumberOfLeaders ?? 0;
-    const needsLeaders = minLeaders > 0 && (!session.leaderNames || session.leaderNames.length < minLeaders);
+    const attendingLeaders = session.leaderNames ?? [];
+    const declinedLeaders = session.declinedLeaderNames ?? [];
+    const needsLeaders = minLeaders > 0 && attendingLeaders.length < minLeaders;
+    const displayName = getStoredDisplayName();
+    const isSignedUp = displayName ? attendingLeaders.includes(displayName) : false;
+    const isDeclined = displayName ? declinedLeaders.includes(displayName) : false;
 
     const dateObj = session.startTime ? session.startTime.toDate() : null;
     const timeString = session.timeTBD ? 'TBD' : (dateObj ? format(dateObj, 'h:mm a') : 'TBD');
@@ -139,36 +147,66 @@ const SessionCard: React.FC<SessionCardProps> = ({ session, onDelete, onEdit, on
                 Leaders
                 {needsLeaders && (
                     <span className="ml-2 px-2 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded-full">
-                    NEEDED ({session.leaderNames?.length ?? 0}/{minLeaders})
-                    </span>
-                )}
-                {session.leaderNames && session.leaderNames.length > 0 && (
-                    <span className="ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
-                    {session.leaderNames.length}{minLeaders ? `/${minLeaders}` : ''} total
+                    NEEDED ({attendingLeaders.length}/{minLeaders})
                     </span>
                 )}
             </h4>
 
-            {session.leaderNames && session.leaderNames.length > 0 ? (
-                <div className="flex flex-wrap gap-1 mb-2">
-                    {session.leaderNames.map((leader) => (
-                    <span key={leader} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
-                        {leader}
-                    </span>
-                    ))}
+            <div className="space-y-2 mb-3">
+                <div>
+                    <p className="text-xs font-medium text-green-700 mb-1">Attending ({attendingLeaders.length})</p>
+                    {attendingLeaders.length > 0 ? (
+                        <div className="flex flex-wrap gap-1">
+                            {attendingLeaders.map((leader) => (
+                            <span key={leader} className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">
+                                {leader}
+                            </span>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-xs text-gray-500 italic">No one signed up yet</p>
+                    )}
                 </div>
-            ) : (
-                <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg mb-2">
-                    <p className="text-orange-800 font-medium text-sm mb-2">No leaders assigned</p>
-                </div>
-            )}
 
-            <button 
-                className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
-                onClick={onSignUp}
+                <div>
+                    <p className="text-xs font-medium text-red-700 mb-1">Declined ({declinedLeaders.length})</p>
+                    {declinedLeaders.length > 0 ? (
+                        <div className="flex flex-wrap gap-1">
+                            {declinedLeaders.map((leader) => (
+                            <span key={leader} className="px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded-full">
+                                {leader}
+                            </span>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-xs text-gray-500 italic">No declines yet</p>
+                    )}
+                </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+                <button
+                    className={`w-full text-white py-2 rounded-lg transition-colors font-medium text-sm ${
+                        isSignedUp ? 'bg-green-600 cursor-default' : 'bg-blue-600 hover:bg-blue-700'
+                    }`}
+                    onClick={onSignUp}
+                    disabled={isSignedUp}
                 >
-                Sign Up as a Leader
-            </button>
+                    {isSignedUp ? 'Attending' : 'Attend'}
+                </button>
+                <button
+                    className={`w-full py-2 rounded-lg transition-colors font-medium text-sm border flex items-center justify-center space-x-1 ${
+                        isDeclined
+                            ? 'bg-red-600 text-white border-red-600 cursor-default'
+                            : 'bg-white text-red-700 border-red-300 hover:bg-red-50'
+                    }`}
+                    onClick={onDecline}
+                    disabled={isDeclined}
+                >
+                    <UserX className="w-4 h-4" />
+                    <span>Declined</span>
+                </button>
+            </div>
         </div>
 
         {session.notes && (

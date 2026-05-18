@@ -23,6 +23,8 @@ import {
   ModalLeaderSignup,
   SessionSpreadsheet
 } from '../components/index';
+import { getStoredDisplayName } from '../util/auth';
+import { signUpLeader, declineLeader } from '../util/sessions';
 
 const Sessions: React.FC = () => {
   const [filter, setFilter] = useState<'All' | 'Planning' | 'Confirmed' | 'Completed' | 'Cancelled'>('All');
@@ -105,6 +107,42 @@ const Sessions: React.FC = () => {
           console.error('Error duplicating session:', error);
           alert('Failed to duplicate session. Please try again.');
       }
+  };
+
+  const handleQuickSignUp = async (session: Session) => {
+    const displayName = getStoredDisplayName();
+
+    if (!displayName) {
+      setShowSignUpModal(session);
+      return;
+    }
+
+    try {
+      await signUpLeader(session.id, displayName);
+      const updatedSessions = await getSessions();
+      setSessions(updatedSessions);
+    } catch (error) {
+      console.error('Error signing up leader:', error);
+      alert('Failed to sign you up. Please try again.');
+    }
+  };
+
+  const handleQuickDecline = async (session: Session) => {
+    const displayName = getStoredDisplayName();
+
+    if (!displayName) {
+      alert('Please enter your name on the login page first.');
+      return;
+    }
+
+    try {
+      await declineLeader(session.id, displayName);
+      const updatedSessions = await getSessions();
+      setSessions(updatedSessions);
+    } catch (error) {
+      console.error('Error declining leader:', error);
+      alert('Failed to save your response. Please try again.');
+    }
   };
 
   return (
@@ -270,7 +308,8 @@ const Sessions: React.FC = () => {
                   onDelete={() => setShowDeleteModal(session.id)}
                   onEdit={() => setShowEditModal(session)}
                   onStatusUpdate={() => setShowUpdateStatusModal(session)}
-                  onSignUp={() => setShowSignUpModal(session)}
+                  onSignUp={() => handleQuickSignUp(session)}
+                  onDecline={() => handleQuickDecline(session)}
                   onCopy={() => onCopy(session.id)}
                 />
               ))}

@@ -39,7 +39,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, error, loading }) => {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Your Name
+              Your Name (will be displayed on sessions you sign up for)
             </label>
             <input
               type="text"

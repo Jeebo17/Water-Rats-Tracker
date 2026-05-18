@@ -101,7 +101,9 @@ const SessionSpreadsheet: React.FC<SessionSpreadsheetProps> = ({
                 <tbody>
                     {sessionsState.map(session => {
                         const minLeaders = session.minNumberOfLeaders ?? 0;
-                        const needsLeaders = minLeaders > 0 && (!session.leaderNames || session.leaderNames.length < minLeaders);
+                        const attendingCount = session.leaderNames?.length ?? 0;
+                        const declinedCount = session.declinedLeaderNames?.length ?? 0;
+                        const needsLeaders = minLeaders > 0 && attendingCount < minLeaders;
                         const dateObj = session.startTime ? session.startTime.toDate() : null;
                         const timeString = session.timeTBD ? 'TBD' : (dateObj ? format(dateObj, 'h:mm a') : 'TBD');
                         const isExpanded = expandedSessionId === session.id;
@@ -167,9 +169,9 @@ const SessionSpreadsheet: React.FC<SessionSpreadsheetProps> = ({
                                             e.stopPropagation();
                                             setShowLeaderSignupModal(session);
                                         }}
-                                        title={'Sign up as a leader'}
+                                        title={'Manage attending and declined lists'}
                                     >
-                                        {session.leaderNames?.length ?? 0}
+                                        {attendingCount}/{declinedCount}
                                     </button>
                                 </td>
 
