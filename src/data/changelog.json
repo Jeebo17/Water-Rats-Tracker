@@ -1,5 +1,25 @@
 [
     {
+        "version": "0.4.1",
+        "date": "18/05/26",
+        "new": [
+            "Login page now captures and stores a local display name so you only type it once per browser.",
+            "One-tap leader signup added to session cards using the saved display name.",
+            "Sessions now store attendance in explicit leader arrays instead of CSV-style text, keeping manual edits compatible.",
+            "Declined leader list added so sessions can track who can and cannot make it separately."
+        ],
+        "changed": [
+            "Header now shows a compact 'Signed in as ...' label beside the Water Rats title on desktop.",
+            "Leader signup and edit modals now manage attending and declined names as lists instead of comma-separated text.",
+            "Session spreadsheet and dashboard views now reflect attending and declined counts.",
+            "Firestore session writes now validate array-based leader lists."
+        ],
+        "fixed": [
+            "Manual leader editing remains available through the existing edit flow while supporting one-tap signup.",
+            "Current signed-in name now pre-fills response actions and no longer needs repeated re-entry."
+        ]
+    },
+    {
         "version": "0.3.5",
         "date": "2026-03-1",
         "new": [
